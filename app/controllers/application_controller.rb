@@ -7,4 +7,14 @@ class ApplicationController < ActionController::Base
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
+
+  def trusted_frontend
+    $stderr.puts "REQUEST IP >>>>>>>>>>>>>>> #{request.remote_ip}"
+    $stderr.puts "TRUSTED LIST >>>>>>>>>>>>> #{APP_CONFIG["trusted_frontend_ip"].join(', ')}"
+    $stderr.puts "IN LIST >>>>>>>>>>>>>>>>>> #{APP_CONFIG["trusted_frontend_ip"].include? request.remote_ip}"
+    unless APP_CONFIG["trusted_frontend_ip"].include? request.remote_ip
+      render :file => "#{RAILS_ROOT}/public/403.html", :status => '403 Forbidden'
+    end
+  end
+
 end

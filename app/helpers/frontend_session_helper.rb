@@ -1,0 +1,2 @@
+module FrontendSessionHelper
+end
