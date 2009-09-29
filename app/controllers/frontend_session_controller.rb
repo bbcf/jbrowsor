@@ -24,7 +24,7 @@ class FrontendSessionController < ApplicationController
     @frontend_session.destroy
 
     respond_to do |format|
-      format.html { redirect_to(logo_url) }
+      format.html
       format.xml  { head :ok }
     end
   end
