@@ -41,6 +41,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources :frontend_session, :only => [:new, :destroy]
   map.resources :logo, :only => [:show]
+  map.resources :jbrowse_view, :only => [:create, :show]
+  map.resources :jbrowse_track, :only => [:create, :show]
 
 #  map.connect ':controller/:action/:id'
 #  map.connect ':controller/:action/:id.:format'

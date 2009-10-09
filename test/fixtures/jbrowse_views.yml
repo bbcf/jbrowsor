@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  frontend_session_id: 1
+  permanent_public: false
+
+two:
+  frontend_session_id: 1
+  permanent_public: false
