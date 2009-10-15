@@ -5,9 +5,9 @@ class LogoController < ApplicationController
     begin
       @frontend_session = FrontendSession.find(params[:id])
       session['frontend_session'] = @frontend_session
-      render :file => "#{RAILS_ROOT}/public/JbrowsoR_Logo.png"
+      render :file => "#{RAILS_ROOT}/public/images/JbrowsoR_Logo.png"
     rescue ActiveRecord::RecordNotFound
-      render :file => "#{RAILS_ROOT}/public/Oops_Logo.png"
+      render :file => "#{RAILS_ROOT}/public/images/Oops_Logo.png"
     end
   end
 

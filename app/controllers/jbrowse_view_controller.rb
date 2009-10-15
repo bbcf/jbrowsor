@@ -9,10 +9,10 @@ class JbrowseViewController < ApplicationController
   # GET /jbrowse_view/1.xml
   def show
     @jbrowse_view = JbrowseView.find(params[:id])
-    # Todo: write code to display view
+    @id = params[:id]
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :layout => false }
+      format.js # show.js.rjs
     end
   end
 
