@@ -11,7 +11,7 @@ validates_presence_of :name, :genome_id, :file_type_id, :data_type_id, :url
 validate :valid_genome_id
 validate :valid_file_type_id
 validate :valid_data_type_id
-validates_numericality_of :genome_id, :filetype, :datatype
+validates_numericality_of :genome_id, :file_type_id, :data_type_id
 validates_format_of :url, :with => %r{^(http|ftp)://.+$}i,
 		    :message => "must be a valid url." 
 
@@ -34,7 +34,7 @@ def valid_file_type_id
     end
 end
 
-def data_file_type_id
+def valid_data_type_id
     begin
      DataType.find(data_type_id)
     rescue

@@ -4,7 +4,7 @@ class JbrowseViewsController < ApplicationController
   # POST /jbrowse_views.xml
   # preliminary
   def create
-     @jbrowse_view = JbrowseView.new(params)
+     @jbrowse_view = JbrowseView.new(params[:jbrowse_view])
     respond_to do |format|
       if @jbrowse_view.save
         format.html

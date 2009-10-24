@@ -1,9 +1,9 @@
 class FrontendSessionsController < ApplicationController
   before_filter :trusted_frontend
 
-  # GET /frontend_sessions/new
-  # GET /frontend_sessions/new.xml
-  def new
+  # POST /frontend_sessions
+  # POST /frontend_sessions.xml
+  def create
     @frontend_session = FrontendSession.new
     respond_to do |format|
       if @frontend_session.save

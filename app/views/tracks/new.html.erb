@@ -1,5 +1,5 @@
 <% form_for(@track) do |f| %>
-<% f.error_messages %>
+<%= f.error_messages %>
 <table>
 <tr><td>Name</td><td><%= f.text_field :name %></td></tr>
 <tr><td>Genome</td><td><%= f.text_field :genome_id %></td></tr>
