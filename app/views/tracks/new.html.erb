@@ -1,0 +1,12 @@
+<% form_for(@track) do |f| %>
+<% f.error_messages %>
+<table>
+<tr><td>Name</td><td><%= f.text_field :name %></td></tr>
+<tr><td>Genome</td><td><%= f.text_field :genome_id %></td></tr>
+<tr><td>Date type</td><td><%= f.text_field :data_type_id %></td></tr>
+<tr><td>File type</td><td><%= f.text_field :file_type_id %></td></tr>
+<tr><td>URL</td><td><%= f.text_field :url %></td></tr>
+<tr><td>Parameters</td><td><%= f.text_field :jbrowse_params %></td></tr>
+</table>
+<%= f.submit "Create new track" %>
+<% end %>

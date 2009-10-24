@@ -9,9 +9,25 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090930145508) do
+ActiveRecord::Schema.define(:version => 20091015225514) do
+
+  create_table "data_types", :force => true do |t|
+    t.string "name"
+  end
+
+  create_table "file_types", :force => true do |t|
+    t.string "extension"
+  end
 
   create_table "frontend_sessions", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "genomes", :force => true do |t|
+    t.string   "name"
+    t.integer  "tax_id"
+    t.string   "species"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -23,6 +39,36 @@ ActiveRecord::Schema.define(:version => 20090930145508) do
     t.datetime "updated_at"
   end
 
-  add_index "jbrowse_views", ["frontend_session_id"], :name => "frontend_session_id_fkey"
+  create_table "jobs", :force => true do |t|
+    t.integer  "track_id"
+    t.boolean  "running"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "statuses", :force => true do |t|
+    t.string "name"
+  end
+
+  create_table "track_positions", :force => true do |t|
+    t.integer  "position"
+    t.integer  "jbrowse_view_id"
+    t.integer  "track_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "tracks", :force => true do |t|
+    t.text     "name"
+    t.integer  "genome_id"
+    t.integer  "file_type_id"
+    t.integer  "data_type_id"
+    t.text     "url"
+    t.text     "jbrowse_params"
+    t.integer  "status"
+    t.text     "base_filename"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
