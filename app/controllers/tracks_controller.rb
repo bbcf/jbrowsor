@@ -1,4 +1,4 @@
-class TrackController < ApplicationController
+class TracksController < ApplicationController
 
   # GET /track
   # GET /track.xml
