@@ -1,7 +1,7 @@
-class JbrowseViewController < ApplicationController
+class JbrowseViewsController < ApplicationController
 
-  # POST /jbrowse_view
-  # POST /jbrowse_view.xml
+  # POST /jbrowse_views
+  # POST /jbrowse_views.xml
   # preliminary
   def create
      @jbrowse_view = JbrowseView.new(params)
@@ -17,8 +17,8 @@ class JbrowseViewController < ApplicationController
   end
 
 
-  # GET /jbrowse_view/1
-  # GET /jbrowse_view/1.xml
+  # GET /jbrowse_views/1
+  # GET /jbrowse_views/1.xml
   def show
     @jbrowse_view = JbrowseView.find(params[:id])
     @id = params[:id]

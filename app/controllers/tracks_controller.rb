@@ -1,13 +1,13 @@
 class TracksController < ApplicationController
 
-  # GET /track
-  # GET /track.xml
+  # GET /tracks
+  # GET /tracks.xml
   def new
      @track = Track.new
   end
 
-  # POST /track
-  # POST /track.xml
+  # POST /tracks
+  # POST /tracks.xml
   def create
      @track = Track.new(params)
     respond_to do |format|

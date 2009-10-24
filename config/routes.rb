@@ -39,9 +39,9 @@ ActionController::Routing::Routes.draw do |map|
   # Note: These default routes make all actions in every controller accessible via GET requests. You should
   # consider removing the them or commenting them out if you're using named routes and resources.
 
-  map.resources :frontend_session, :only => [:new, :destroy]
+  map.resources :frontend_sessions, :only => [:new, :destroy]
   map.resources :logo, :only => [:show]
-  map.resources :jbrowse_view, :only => [:create, :show]
+  map.resources :jbrowse_views, :only => [:create, :show]
   map.resources :tracks, :only => [:new, :create, :show]
 
 #  map.connect ':controller/:action/:id'

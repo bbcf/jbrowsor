@@ -1,8 +1,8 @@
-class FrontendSessionController < ApplicationController
+class FrontendSessionsController < ApplicationController
   before_filter :trusted_frontend
 
-  # GET /frontend_session/new
-  # GET /frontend_session/new.xml
+  # GET /frontend_sessions/new
+  # GET /frontend_sessions/new.xml
   def new
     @frontend_session = FrontendSession.new
     respond_to do |format|
@@ -17,8 +17,8 @@ class FrontendSessionController < ApplicationController
   end
 
 
-  # DELETE /frontend_session/1
-  # DELETE /frontend_session/1.xml
+  # DELETE /frontend_sessions/1
+  # DELETE /frontend_sessions/1.xml
   def destroy
     @frontend_session = FrontendSession.find(params[:id])
     @frontend_session.destroy
