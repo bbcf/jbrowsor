@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.integer  "frontend_session_id"
     t.integer  "status_id"
     t.text     "url"
+    t.boolean  "public"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

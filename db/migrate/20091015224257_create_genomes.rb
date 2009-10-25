@@ -8,6 +8,7 @@ class CreateGenomes < ActiveRecord::Migration
       t.integer :frontend_session_id
       t.integer :status_id
       t.text :url
+      t.boolean :public
       t.timestamps
     end
         execute "ALTER TABLE genomes ADD CONSTRAINT frontend_session_id_fkey FOREIGN KEY (frontend_session_id) REFERENCES frontend_sessions (id);

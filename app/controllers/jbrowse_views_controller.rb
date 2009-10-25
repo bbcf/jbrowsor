@@ -16,7 +16,6 @@ class JbrowseViewsController < ApplicationController
     end     
   end
 
-
   # GET /jbrowse_views/1
   # GET /jbrowse_views/1.xml
   def show
