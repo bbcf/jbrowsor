@@ -2,7 +2,7 @@ class CreateJobs < ActiveRecord::Migration
   def self.up
     create_table :jobs do |t|
       t.integer :runnable_id
-      t.string :runnable_type
+      t.string  :runnable_type
       t.boolean :running		 
       t.timestamps
     end

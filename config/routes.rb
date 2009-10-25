@@ -43,7 +43,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :logo, :only => [:show]
   map.resources :jbrowse_views, :only => [:create, :show]
   map.resources :tracks, :only => [:new, :create, :show]
-  map.resources :genomes, :only => [:index, :new, :create]
+  map.resources :genomes, :only => [:index, :new, :create, :update]
 
 #  map.connect ':controller/:action/:id'
 #  map.connect ':controller/:action/:id.:format'

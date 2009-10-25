@@ -13,7 +13,11 @@ class TracksController < ApplicationController
     @track.status_id = Status.find(:first, :conditions=>["name = ?", 'pending'])
     respond_to do |format|
       if @track.save
-        
+        Job.new(
+                :runnable_type => "Track",
+                :runnable_id   => @track.id,
+                :running       => false
+                )
         format.html
         #        format.xml {render :layout => false}
         format.json {
