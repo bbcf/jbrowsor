@@ -16,7 +16,8 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
   end
 
   create_table "file_types", :force => true do |t|
-    t.string "extension"
+    t.string "name"
+    t.text   "description"
   end
 
   create_table "frontend_sessions", :force => true do |t|
@@ -28,6 +29,10 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.string   "name"
     t.integer  "tax_id"
     t.string   "species"
+    t.text     "chr_list"
+    t.integer  "frontend_session_id"
+    t.integer  "status_id"
+    t.text     "url"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -40,7 +45,8 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
   end
 
   create_table "jobs", :force => true do |t|
-    t.integer  "track_id"
+    t.integer  "runnable_id"
+    t.string   "runnable_type"
     t.boolean  "running"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -65,7 +71,7 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.integer  "data_type_id"
     t.text     "url"
     t.text     "jbrowse_params"
-    t.integer  "status"
+    t.integer  "status_id"
     t.text     "base_filename"
     t.datetime "created_at"
     t.datetime "updated_at"

@@ -7,8 +7,7 @@ class CreateTrackPositions < ActiveRecord::Migration
       t.timestamps
     end
     execute "ALTER TABLE track_positions ADD CONSTRAINT jbrowse_view_id_fkey FOREIGN KEY (jbrowse_view_id) REFERENCES jbrowse_views (id);
-ALTER TABLE track_positions ADD CONSTRAINT track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks (id);
-"
+ALTER TABLE track_positions ADD CONSTRAINT track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks (id);"
   end
 
   def self.down

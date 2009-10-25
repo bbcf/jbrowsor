@@ -7,7 +7,7 @@ namespace :jbrowse do
     gcc_inc_args = "/opt/local/include"
     os = `uname`.chomp
     puts "Running under #{os}."
-
+    
     if File.exist? codepath or File.exist? linkpath
       $stderr.puts "jbrowse directory already exists, aborting installation!"
     else
@@ -18,7 +18,7 @@ namespace :jbrowse do
 	$stderr.puts "jbrowse code structure appears to have changed, unable to complete installation"
       else
 	Dir.mkdir linkpath
-
+        
 	File.symlink(codepath + "genome.css", linkpath + "genome.css")
 	File.symlink(codepath + "js", linkpath + "js")
 	File.symlink(codepath + "jslib", linkpath + "jslib")

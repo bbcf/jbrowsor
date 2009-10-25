@@ -1,7 +1,8 @@
 class CreateFileTypes < ActiveRecord::Migration
   def self.up
     create_table :file_types do |t|
-      t.string :extension
+      t.string :name
+      t.text :description
     end
   end
 

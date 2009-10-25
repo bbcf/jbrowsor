@@ -1,0 +1,11 @@
+<% form_for(@genome) do |f| %>
+<%= f.error_messages %>
+<table>
+<tr><td>Name</td><td><%= f.text_field :name %></td></tr>
+<tr><td>Tax_id</td><td><%= f.text_field :tax_id %></td></tr>
+<tr><td>Species</td><td><%= f.text_field :species %></td></tr>
+<tr><td>URL</td><td><%= f.text_field :url %></td></tr>
+<tr><td>List of chromosomes (comma separated)</td><td><%= f.text_field :chr_list %></td></tr>
+</table>
+<%= f.submit "Create new genome" %>
+<% end %>

@@ -10,15 +10,22 @@ class TracksController < ApplicationController
   # POST /tracks.xml
   def create
     @track = Track.new(params[:track])
+    @track.status_id = Status.find(:first, :conditions=>["name = ?", 'pending'])
     respond_to do |format|
       if @track.save
         
         format.html
         #        format.xml {render :layout => false}
-        format.json {render :layout => false, :json => @track.id.to_json}
+        format.json {
+          render :layout => false, 
+          :json => {:id => @track.id}.to_json
+        }
       else
         format.html {render :action => :new} #, :status => 403
-        format.json {render :layout => false, :json => @track.errors.to_json}
+        format.json {
+          render :layout => false, 
+          :json => {:errors => @track.errors}.to_json
+        }
       end
     end
   end
