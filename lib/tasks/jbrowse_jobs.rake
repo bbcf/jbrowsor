@@ -43,11 +43,9 @@ namespace :jbrowse do
       ### get existing genomes
       existing_genomes = Genome.find(:all, :conditions=>["status_id = ?", h_status['success']])
       if existing_genomes.size > 0
-        puts "Existing genomes:\n" 
-        + existing_genomes.map{|e| 
-          "==>#{e.id}: #{e.name}; #{e.species}[#{e.tax_id}] -- " + 
-          (e.public==true ? "PUBLIC" : "private[#{frontend_session_id}]")
-        }.join("\n")
+        puts "Existing genomes:\n" + (existing_genomes.map{|e| "==>#{e.id}: #{e.name}; #{e.species}-#{e.tax_id}-" + ((e.public==true) ? "PUBLIC" : "private-#{e.frontend_session_id}-")}.join(", "))
+
+        
       else
         puts "No existing genomes yet.\n";
       end
@@ -67,11 +65,12 @@ namespace :jbrowse do
           g=Genome.find(job.runnable_id)
           
           ###get fasta file
-          puts "==> Getting #{g.url}...\n";
+          puts "==> Getting #{g.url}...\n"
           url = URI.parse(g.url)
           res = Net::HTTP.get(url)
           
           ###writing file / computing size
+          puts "==> Writing file...\n"
           new_dir=genome_data_dir + "/#{g.id}_#{g.tax_id}"
           Dir.mkdir(new_dir) 
           filename_new = new_dir + "/_refseqs.fa"
@@ -79,14 +78,18 @@ namespace :jbrowse do
           file_size = File.size(filename_new)
           
           ###comparing public genome files / verifying uniqueness of file
+          puts "==> Comparing public genome files...\n"
           existing_genomes.reject{|e| e.public == false}.each do |e|
             filename_ex=genome_data_dir + "/#{e.id}_#{e.tax_id}/_refseqs.fa"
+            puts "--->Comparing with #{filename_ex}\n";
+            puts "File.size(filename_ex) == file_size\n"
+            puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
             if (File.size(filename_ex)==file_size && 
                 `diff #{filename_new} #{filename_ex}`.chomp == '')
               File.delete(filename_new)
               Dir.rmdir(new_dir)
-              $stderr.puts "A public genome already exists on the server. You should find the existing genomes."
-              break
+              raise "A public genome already exists on the server. You should find the existing genomes."
+             # break
             end
           end
           
@@ -97,7 +100,10 @@ namespace :jbrowse do
             raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
           end
           
+          g.update_attributes({:status_id => h_status['success']})
+          
         rescue Exception => er
+          $stderr.puts er.message
           g.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
         end
         
@@ -105,8 +111,9 @@ namespace :jbrowse do
         
       end ### end genome_lst.each
     end
-
+    
     ##################################### TRACKS
+    
     
     
 

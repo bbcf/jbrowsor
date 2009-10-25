@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.integer  "status_id"
     t.text     "url"
     t.boolean  "public"
+    t.text     "error_log"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -74,6 +75,7 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.text     "jbrowse_params"
     t.integer  "status_id"
     t.text     "base_filename"
+    t.text     "error_log"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -9,6 +9,7 @@ class CreateTracks < ActiveRecord::Migration
       t.text :jbrowse_params
       t.integer :status_id
       t.text :base_filename
+      t.text :error_log
       t.timestamps
     end
     execute "ALTER TABLE tracks ADD CONSTRAINT genome_id_fkey FOREIGN KEY (genome_id) REFERENCES genomes (id);
