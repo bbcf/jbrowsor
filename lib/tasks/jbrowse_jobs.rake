@@ -1,6 +1,6 @@
 namespace :jbrowse do
   desc "Process genome fasta files in the queue"
-  task :genomes, [:version] do |t, args|
+  task :jobs, [:version] do |t, args|
  
     ### Use rails enviroment
     require "#{RAILS_ROOT}/config/environment" 
