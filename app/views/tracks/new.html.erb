@@ -6,7 +6,8 @@
 <tr><td>Data type</td><td><%= f.text_field :data_type_id %></td></tr>
 <tr><td>File type</td><td><%= f.text_field :file_type_id %></td></tr>
 <tr><td>URL</td><td><%= f.text_field :url %></td></tr>
-<tr><td>Parameters</td><td><%= f.text_field :jbrowse_params %></td></tr>
+<tr><td>Parameters</td><td><%= f.text_area :jbrowse_params %></td></tr> 
+<!--<tr><td>Strand_plus</td><td><%= f.check_box :strand_plus %></td></tr>-->
 </table>
 <%= f.submit "Create new track" %>
 <% end %>

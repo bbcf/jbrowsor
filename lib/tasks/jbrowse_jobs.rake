@@ -10,6 +10,9 @@ namespace :jbrowse do
     require 'net/http'
     require 'uri'
     
+    ### Json parsing
+    require 'json'
+    
     ###Initialize variables
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
@@ -158,8 +161,24 @@ namespace :jbrowse do
             
             if  h_data_type[t.data_type_id] == 'qualitative'
               ### Qualitative track
+
+              ###### Write the config file 
+              f_conf_file = File.new("conf_file.json", 'w') or raise "Cannot open file conf_file.json!"
+              conf_data = JSON.parse(t.jbrowse_params)
+              conf_data['description']="Database Test"
+              conf_data['db_adaptor']="Bio:DB::SeqFeature::Store"
+              conf_data['db_args']={
+                "-adaptor" => "memory",
+                "-dir"     => "annot_gff" ### write gff data into this directory
+              } 
+              f_conf_file.write(conf_data.to_json)
+              f_conf_file.close
               
-              
+              ###### Execute biodb-to-json.pl
+              puts "==> Executing biodb-to-json.pl...\n";
+              output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json`
+              raise "Error executing biodb-to-json.pl: #{output}" unless (output == '')
+
             elsif h_data_type[t.data_type_id] == 'quantitative'
               ### Quantitative track
               
