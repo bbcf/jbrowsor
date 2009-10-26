@@ -13,7 +13,7 @@ require 'digest/sha1'
   def create
     @track = Track.new(params[:track])
     @track.status_id = Status.find(:first, :conditions=>["name = ?", 'pending'])
-    @track.base_filename =  Digest::SHA1.hexdigest(@track.url.to_s).crypt("7hs2ke")
+    @track.base_filename =  Digest::SHA1.hexdigest(@track.url.to_s).crypt("7hs2ke").sub(/[\\]/, 'a1').sub(/[\/]/, 'a2')
     respond_to do |format|
       if @track.save
         Job.new(

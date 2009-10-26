@@ -146,7 +146,7 @@ namespace :jbrowse do
           
           ###writing file / computing size     
           genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
-          filename="#{t.base_filename}_" + url.match(/\/([^\/]+)$/)[0]
+          filename="#{t.base_filename}_" + t.url.match(/([^\/]+)$/)[0]
           file_path=genome_base_dir + "/#{filename}"
           puts "==> Writing file #{file_path}...\n"
           File.open(file_path, 'w') {|f| f.write(res) }
