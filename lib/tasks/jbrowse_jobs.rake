@@ -189,7 +189,7 @@ namespace :jbrowse do
               ### assume we have a WIG file to process named wig_file
               ###executing jbrowse script                                                                                   
               puts "==> Executing wig2png...\n";             
-               output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_without_extension} #{t.jbrowse_params}`
+               output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_base} #{t.jbrowse_params}`
               raise "Error executing wig2png: #{output}" unless (output == '')
              
             end
