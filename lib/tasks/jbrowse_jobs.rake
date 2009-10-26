@@ -140,35 +140,35 @@ namespace :jbrowse do
           file_path=genome_base_dir + "/#{filename}"
           File.open(file_path, 'w') {|f| f.write(res) }
           file_size = File.size(filename_new)
-          
-          if t.data_type == 0
-            ### Qualitative track
-            
-            
-          elsif t.data_type == 1
-            ### Quantitative track
-            
-            wig_file=filename ## by default the original file
-            
-            if t.file_type == 0
-              ### TO DO convert GFF -> WIG
-              
-            elsif t.file_type == 2
-              ### TO DO convert BED -> WIG
 
-            end
+          ### Change directory to work locally on the file
+          Dir.chdir(genome_base_dir) do
             
-            ### assume we have a WIG file to process named wig_file
-            ###executing jbrowse script                                                                                   
-            puts "==> Executing create_track.pl...\n";
-            Dir.chdir(genome_base_dir) do
-              output = `#{jbrowse_bin_dir}/...`
+            if t.data_type == 0
+              ### Qualitative track
+              
+              
+            elsif t.data_type == 1
+              ### Quantitative track
+              
+              wig_file=filename ## by default the original file
+              
+              if t.file_type == 0
+                ### TO DO convert GFF -> WIG
+                
+              elsif t.file_type == 2
+                ### TO DO convert BED -> WIG
+                
+              end
+              
+              ### assume we have a WIG file to process named wig_file
+              ###executing jbrowse script                                                                                   
+              puts "==> Executing create_track.pl...\n";              
+              filename_without_extension=wig_file.match(/^(.+?)\.\w{3}/)[0]
+              output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./tiles ./tracks #{filename_without_extension} #{t.jbrowse_params}`
               raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
             end
-
-
-
-            end
+                        
           end
           
         rescue
