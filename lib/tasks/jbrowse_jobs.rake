@@ -12,7 +12,9 @@ namespace :jbrowse do
     
     ### Json parsing
     require 'json'
-    
+
+    require 'ftools'
+
     ###Initialize variables
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
@@ -121,7 +123,7 @@ namespace :jbrowse do
       puts "Getting file types...\n";
       h_file_type={}
       FileType.find(:all).map{|ft| h_file_type[ft.id]=ft.name}
-
+      
       ### get data types                                                                                              
       puts "Getting data types...\n";
       h_data_type={}
@@ -150,23 +152,34 @@ namespace :jbrowse do
           
           ###writing file / computing size     
           genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
-          filename="#{t.base_filename}_" + t.url.match(/([^\/]+)$/)[0]
+          file_type = h_file_type[t.file_type_id]
+          puts "==>file type: #{file_type}, #{t.file_type_id}\n";
+          filename="#{t.base_filename}.#{file_type}" #_" + t.url.match(/([^\/]+)$/)[0] # tried to put the filename but limiting size of the file in wig2png
           filename_base=filename.match(/^(.+?)\.\w{3}/)[0]
           file_path=genome_base_dir + "/#{filename}"
           puts "==> Writing file #{file_path}...\n"
-          File.open(file_path, 'w') {|f| f.write(res) }
-     
+          file = File.open(file_path, 'w') or raise "Cannot open file #{file_path}!"
+          file.write(res)
+          file.close
+
           ### Change directory to work locally on the file
           Dir.chdir(genome_base_dir) do
             
             if  h_data_type[t.data_type_id] == 'qualitative'
               ### Qualitative track
 
+              ###### Move file in the proper directory
+              puts "Move file #{file_path} -> #{genome_base_dir}/annot_gff...\n"
+              Dir.mkdir("annot_gff") if !File.exist?("annot_gff")              
+              File.move(file_path, genome_base_dir + "/annot_gff")
+              file_path=genome_base_dir + "/annot_gff/" + filename
+ 
               ###### Write the config file 
+              puts "Write config file...\n"
               f_conf_file = File.new("conf_file.json", 'w') or raise "Cannot open file conf_file.json!"
               conf_data = JSON.parse(t.jbrowse_params)
               conf_data['description']="Database Test"
-              conf_data['db_adaptor']="Bio:DB::SeqFeature::Store"
+              conf_data['db_adaptor']="Bio::DB::SeqFeature::Store"
               conf_data['db_args']={
                 "-adaptor" => "memory",
                 "-dir"     => "annot_gff" ### write gff data into this directory
@@ -192,13 +205,13 @@ namespace :jbrowse do
 #                f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
 #                f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
 #                h_orient={'-' => 'minus', '+' => 'plus'}
- #               
- #               while (line = f_in.gets.chomp)
- #                 if ! line.match(/^\#/)                    
- #                   tab = line.split("\t")
- #                   end
- #                 end
- #               end
+#               
+#                while (line = f_in.gets.chomp)
+#                  if ! line.match(/^\#/)                    
+#                    tab = line.split("\t")
+#                    end
+#                  end
+#                end
 
               elsif h_file_type[t.file_type_id] == 'bed'
                 ### TO DO convert BED -> WIG
