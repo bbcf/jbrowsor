@@ -20,7 +20,7 @@ require 'digest/sha1'
                 :runnable_type => "Track",
                 :runnable_id   => @track.id,
                 :running       => false
-                )        
+                ).save        
         format.html
         #        format.xml {render :layout => false}
         format.json {
