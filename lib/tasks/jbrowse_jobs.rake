@@ -1,5 +1,5 @@
 namespace :jbrowse do
-  desc "Process genome fasta files in the queue"
+  desc "Process jobs in the queue: first add new genomes, then add new tracks"
   task :jobs, [:version] do |t, args|
  
     ### Use rails enviroment
@@ -21,18 +21,13 @@ namespace :jbrowse do
       end
     end
 
-    ######################## GENOMES
-    
-    genome_data_dir = jbrowse_data_dir + "/genomes"
-    
-    ### set genomes dir if not exist    
-    puts "Setting genomes diretory...\n"
-    Dir.mkdir genome_data_dir unless File.exist? genome_data_dir
-    
-    ### get statuses
+    ### get statuses 
     puts "Getting statuses...\n";
     h_status={}
     Status.find(:all).map{|s| h_status[s.name]=s.id}
+    
+    
+    ######################## GENOMES
     
     ### get genome jobs to execute
     jobs = Job.find(:all, :conditions =>["running is false and runnable_type = ?", 'Genome'])
@@ -44,7 +39,6 @@ namespace :jbrowse do
       existing_genomes = Genome.find(:all, :conditions=>["status_id = ?", h_status['success']])
       if existing_genomes.size > 0
         puts "Existing genomes:\n" + (existing_genomes.map{|e| "==>#{e.id}: #{e.name}; #{e.species}-#{e.tax_id}-" + ((e.public==true) ? "PUBLIC" : "private-#{e.frontend_session_id}-")}.join(", "))
-
         
       else
         puts "No existing genomes yet.\n";
@@ -71,7 +65,7 @@ namespace :jbrowse do
           
           ###writing file / computing size
           puts "==> Writing file...\n"
-          new_dir=genome_data_dir + "/#{g.id}_#{g.tax_id}"
+          new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
           Dir.mkdir(new_dir) 
           filename_new = new_dir + "/_refseqs.fa"
           File.open(filename_new, 'w') {|f| f.write(res) }
@@ -80,7 +74,7 @@ namespace :jbrowse do
           ###comparing public genome files / verifying uniqueness of file
           puts "==> Comparing public genome files...\n"
           existing_genomes.reject{|e| e.public == false}.each do |e|
-            filename_ex=genome_data_dir + "/#{e.id}_#{e.tax_id}/_refseqs.fa"
+            filename_ex=jbrowse_data_dir + "/#{e.id}_#{e.tax_id}/_refseqs.fa"
             puts "--->Comparing with #{filename_ex}\n";
             puts "File.size(filename_ex) == file_size\n"
             puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
@@ -109,13 +103,49 @@ namespace :jbrowse do
         
         Job.find(job.id).destroy
         
-      end ### end genome_lst.each
-    end
+      end ### end jobs.each
+    end ### end if
     
     ##################################### TRACKS
     
+    ### get track jobs to execute                                                                                                                          
+    jobs = Job.find(:all, :conditions =>["running is false and runnable_type = ?", 'Track'])
+    num_jobs=jobs.size
     
-    
+    if jobs.size > 0 ### continue if there is something to do                                                                                               
+      puts "#{num_jobs} new jobs...\n";
+      
+      ### foreach new track                                                                                                                                
+      jobs.each do |job|
+        
+        begin
+          
+          ###change running status of the job           
+          puts "==>Processing job #{job.id}...\n"
+          job.update_attribute(:running,  true)
+          
+          ###get the track object                                                                   
+          t=Track.find(job.runnable_id)
 
+          ###get wig/bed/gff file        
+          puts "==> Getting #{t.url}...\n"
+          url = URI.parse(t.url)
+          res = Net::HTTP.get(url)
+          
+          ###writing file / computing size     
+          puts "==> Writing file...\n"
+          new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
+          Dir.mkdir(new_dir)
+          filename_new = new_dir + "/_refseqs.fa"
+          File.open(filename_new, 'w') {|f| f.write(res) }
+          file_size = File.size(filename_new)
+
+          
+        rescue
+        end
+      end
+      
+    end
+    
   end
 end    

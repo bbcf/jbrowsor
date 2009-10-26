@@ -10,6 +10,7 @@ class Track < ActiveRecord::Base
   has_one :job, :as => :runnable
   
   validates_presence_of :name, :genome_id, :file_type_id, :data_type_id, :url
+  validated_uniqueness_of :base_filename
   validate :valid_genome_id
   validate :valid_file_type_id
   validate :valid_data_type_id
