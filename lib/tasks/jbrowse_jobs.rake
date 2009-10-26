@@ -65,7 +65,7 @@ namespace :jbrowse do
           
           ###writing file / computing size
           puts "==> Writing file...\n"
-          new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
+          new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}/"
           Dir.mkdir(new_dir) 
           filename_new = new_dir + "/_refseqs.fa"
           File.open(filename_new, 'w') {|f| f.write(res) }
@@ -82,7 +82,7 @@ namespace :jbrowse do
                 `diff #{filename_new} #{filename_ex}`.chomp == '')
               File.delete(filename_new)
               Dir.rmdir(new_dir)
-              raise "A public genome already exists on the server. You should find the existing genomes."
+              raise "A public genome already exists on the server. You should use the existing genomes_ID."
              # break
             end
           end
@@ -126,6 +126,7 @@ namespace :jbrowse do
           
           ###get the track object                                                                   
           t=Track.find(job.runnable_id)
+          g=Genome.find(t.genome_id)
 
           ###get wig/bed/gff file        
           puts "==> Getting #{t.url}...\n"
@@ -134,12 +135,41 @@ namespace :jbrowse do
           
           ###writing file / computing size     
           puts "==> Writing file...\n"
-          new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
-          Dir.mkdir(new_dir)
-          filename_new = new_dir + "/_refseqs.fa"
-          File.open(filename_new, 'w') {|f| f.write(res) }
+          genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
+          filename="#{t.base_filename}_" + url.match(/\/([^\/]+)$/)[0]
+          file_path=genome_base_dir + "/#{filename}"
+          File.open(file_path, 'w') {|f| f.write(res) }
           file_size = File.size(filename_new)
+          
+          if t.data_type == 0
+            ### Qualitative track
+            
+            
+          elsif t.data_type == 1
+            ### Quantitative track
+            
+            wig_file=filename ## by default the original file
+            
+            if t.file_type == 0
+              ### TO DO convert GFF -> WIG
+              
+            elsif t.file_type == 2
+              ### TO DO convert BED -> WIG
 
+            end
+            
+            ### assume we have a WIG file to process named wig_file
+            ###executing jbrowse script                                                                                   
+            puts "==> Executing create_track.pl...\n";
+            Dir.chdir(genome_base_dir) do
+              output = `#{jbrowse_bin_dir}/...`
+              raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
+            end
+
+
+
+            end
+          end
           
         rescue
         end
