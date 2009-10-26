@@ -171,9 +171,10 @@ namespace :jbrowse do
               ###### Move file in the proper directory
               puts "Move file #{file_path} -> #{genome_base_dir}/annot_gff...\n"
               Dir.mkdir("annot_gff") if !File.exist?("annot_gff")              
-              File.move(file_path, genome_base_dir + "/annot_gff")
+              File.move(file_path, genome_base_dir + "/annot_gff") ## move file in the archive of annotations
+              # File.copy(genome_base_dir + "/archive_gff/" + filename, genome_base_dir + "/running_gff/" + filename)
               file_path=genome_base_dir + "/annot_gff/" + filename
- 
+              
               ###### Write the config file 
               puts "Write config file...\n"
               f_conf_file = File.new("conf_file.json", 'w') or raise "Cannot open file conf_file.json!"
@@ -189,8 +190,11 @@ namespace :jbrowse do
               
               ###### Execute biodb-to-json.pl
               puts "==> Executing biodb-to-json.pl...\n";
-              output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json`
-              raise "Error executing biodb-to-json.pl: #{output}" unless (output == '')
+              output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json 1>biodb-to-json.log 2>biodb-to-json.error_log`
+#              file_log = File.new("log", 'r')
+#              file_error_log = File.new("error_log", 'r')
+##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
+#              raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
 
             elsif h_data_type[t.data_type_id] == 'quantitative'
               ### Quantitative track
