@@ -155,7 +155,7 @@ namespace :jbrowse do
           file_type = h_file_type[t.file_type_id]
           puts "==>file type: #{file_type}, #{t.file_type_id}\n";
           filename="#{t.base_filename}.#{file_type}" #_" + t.url.match(/([^\/]+)$/)[0] # tried to put the filename but limiting size of the file in wig2png
-          filename_base=filename.match(/^(.+?)\.\w{3}/)[0]
+          filename_base=filename.match(/^(.+?)\.[^.]+$/)[0]
           file_path=genome_base_dir + "/#{filename}"
           puts "==> Writing file #{file_path}...\n"
           file = File.open(file_path, 'w') or raise "Cannot open file #{file_path}!"

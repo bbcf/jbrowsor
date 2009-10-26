@@ -8,7 +8,7 @@ class CreateGenomes < ActiveRecord::Migration
       t.integer :frontend_session_id
       t.integer :status_id
       t.text :url
-      t.boolean :public
+      t.boolean :public, :default => true
       t.text :error_log
       t.timestamps
     end
