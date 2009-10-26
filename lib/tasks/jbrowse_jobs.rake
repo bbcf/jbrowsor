@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-1 -*-
 namespace :jbrowse do
   desc "Process jobs in the queue: first add new genomes, then add new tracks"
   task :jobs, [:version] do |t, args|
@@ -147,6 +148,7 @@ namespace :jbrowse do
           ###writing file / computing size     
           genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
           filename="#{t.base_filename}_" + t.url.match(/([^\/]+)$/)[0]
+          filename_base=filename.match(/^(.+?)\.\w{3}/)[0]
           file_path=genome_base_dir + "/#{filename}"
           puts "==> Writing file #{file_path}...\n"
           File.open(file_path, 'w') {|f| f.write(res) }
@@ -165,7 +167,20 @@ namespace :jbrowse do
               
               if h_file_type[t.file_type_id] == 'wig'
                 ### TO DO convert GFF -> WIG
-                puts "Conversion GFF -> WIG...\n"
+                puts "Conversion GFF -> WIG...\n" #can generate 2 separate tracks minus and plus ---©TODO---
+                ### to make it easier, when one send a gff file it must provide also a strand option set to minus or plus
+#                f_in = File.new(filename, 'r') or raise "Cannot open #{filename}!"
+#                f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
+#                f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
+#                h_orient={'-' => 'minus', '+' => 'plus'}
+ #               
+ #               while (line = f_in.gets.chomp)
+ #                 if ! line.match(/^\#/)                    
+ #                   tab = line.split("\t")
+ #                   end
+ #                 end
+ #               end
+
               elsif h_file_type[t.file_type_id] == 'bed'
                 ### TO DO convert BED -> WIG
                 puts "Conversion GFF -> WIG...\n"
@@ -173,9 +188,8 @@ namespace :jbrowse do
               
               ### assume we have a WIG file to process named wig_file
               ###executing jbrowse script                                                                                   
-              puts "==> Executing wig2png...\n";              
-              filename_without_extension=wig_file.match(/^(.+?)\.\w{3}/)[0]
-              output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_without_extension} #{t.jbrowse_params}`
+              puts "==> Executing wig2png...\n";             
+               output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_without_extension} #{t.jbrowse_params}`
               raise "Error executing wig2png: #{output}" unless (output == '')
              
             end
