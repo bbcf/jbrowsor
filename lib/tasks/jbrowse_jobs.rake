@@ -113,6 +113,17 @@ namespace :jbrowse do
     num_jobs=jobs.size
     
     if jobs.size > 0 ### continue if there is something to do                                                                                               
+      ### get file types                                                                                                
+      puts "Getting file types...\n";
+      h_file_type={}
+      FileType.find(:all).map{|s| h_file_type[s.name]=s.id}
+
+      ### get data types                                                                                              
+      puts "Getting data types...\n";
+      h_data_type={}
+      DataType.find(:all).map{|s| h_data_type[s.name]=s.id}
+
+
       puts "#{num_jobs} new jobs...\n";
       
       ### foreach new track                                                                                                                                
@@ -134,31 +145,31 @@ namespace :jbrowse do
           res = Net::HTTP.get(url)
           
           ###writing file / computing size     
-          puts "==> Writing file...\n"
           genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
           filename="#{t.base_filename}_" + url.match(/\/([^\/]+)$/)[0]
           file_path=genome_base_dir + "/#{filename}"
+          puts "==> Writing file #{file_path}...\n"
           File.open(file_path, 'w') {|f| f.write(res) }
           file_size = File.size(filename_new)
 
           ### Change directory to work locally on the file
           Dir.chdir(genome_base_dir) do
             
-            if t.data_type == 0
+            if  h_data_type[t.data_type_id] == 'qualitative'
               ### Qualitative track
               
               
-            elsif t.data_type == 1
+            elsif h_data_type[t.data_type_id] == 'quantitative'
               ### Quantitative track
               
               wig_file=filename ## by default the original file
               
-              if t.file_type == 0
+              if h_file_type[t.file_type_id] == 'wig'
                 ### TO DO convert GFF -> WIG
-                
-              elsif t.file_type == 2
+                puts "Conversion GFF -> WIG...\n"
+              elsif h_file_type[t.file_type_id] == 'bed'
                 ### TO DO convert BED -> WIG
-                
+                puts "Conversion GFF -> WIG...\n"
               end
               
               ### assume we have a WIG file to process named wig_file
@@ -171,7 +182,9 @@ namespace :jbrowse do
                         
           end
           
-        rescue
+        rescue Exception => er
+          $stderr.puts er.message
+          t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
         end
       end
       
