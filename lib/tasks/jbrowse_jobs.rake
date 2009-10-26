@@ -44,7 +44,7 @@ namespace :jbrowse do
         puts "No existing genomes yet.\n";
       end
       
-      puts "#{num_jobs} new jobs...\n";
+      puts "#{num_jobs} new genome jobs...\n";
       
       ### foreach new genome
       jobs.each do |job|
@@ -116,15 +116,15 @@ namespace :jbrowse do
       ### get file types                                                                                                
       puts "Getting file types...\n";
       h_file_type={}
-      FileType.find(:all).map{|s| h_file_type[s.name]=s.id}
+      FileType.find(:all).map{|ft| h_file_type[ft.id]=ft.name}
 
       ### get data types                                                                                              
       puts "Getting data types...\n";
       h_data_type={}
-      DataType.find(:all).map{|s| h_data_type[s.name]=s.id}
+      DataType.find(:all).map{|dt| h_data_type[dt.id]=dt.name}
 
 
-      puts "#{num_jobs} new jobs...\n";
+      puts "#{num_jobs} new track jobs...\n";
       
       ### foreach new track                                                                                                                                
       jobs.each do |job|
@@ -150,8 +150,7 @@ namespace :jbrowse do
           file_path=genome_base_dir + "/#{filename}"
           puts "==> Writing file #{file_path}...\n"
           File.open(file_path, 'w') {|f| f.write(res) }
-          file_size = File.size(filename_new)
-
+     
           ### Change directory to work locally on the file
           Dir.chdir(genome_base_dir) do
             
@@ -174,21 +173,33 @@ namespace :jbrowse do
               
               ### assume we have a WIG file to process named wig_file
               ###executing jbrowse script                                                                                   
-              puts "==> Executing create_track.pl...\n";              
+              puts "==> Executing wig2png...\n";              
               filename_without_extension=wig_file.match(/^(.+?)\.\w{3}/)[0]
-              output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./tiles ./tracks #{filename_without_extension} #{t.jbrowse_params}`
-              raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
+              output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_without_extension} #{t.jbrowse_params}`
+              raise "Error executing wig2png: #{output}" unless (output == '')
+             
             end
                         
           end
+                    
+          ### if arrives here, means that everything worked fine
+          t.update_attributes({:status_id => h_status['success']})
+
+          ### so let's delete the downloaded file -- if works fine move this line after the rescue
+          File.delete(file_path)
           
         rescue Exception => er
           $stderr.puts er.message
           t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
         end
-      end
+
+        ### delete file and delete job
+
+        Job.find(job.id).destroy
+
+      end ### each jobs.each
       
-    end
+    end  ### end if
     
-  end
-end    
+  end ### end task
+end  ### end namespace  
