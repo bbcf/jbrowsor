@@ -2,14 +2,14 @@
 namespace :jbrowse do
   desc "Process jobs in the queue: first add new genomes, then add new tracks"
   task :jobs, [:version] do |t, args|
- 
+
     ### Use rails enviroment
     require "#{RAILS_ROOT}/config/environment" 
 
     ### Require Net::HTTP
     require 'net/http'
     require 'uri'
-    
+
     ### Json parsing
     require 'json'
 
@@ -89,7 +89,7 @@ namespace :jbrowse do
               File.delete(filename_new)
               Dir.rmdir(new_dir)
               raise "A public genome already exists on the server. You should use the existing genomes_ID."
-             # break
+	      # break
             end
           end
           
@@ -191,10 +191,10 @@ namespace :jbrowse do
               ###### Execute biodb-to-json.pl
               puts "==> Executing biodb-to-json.pl...\n";
               output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json 1>biodb-to-json.log 2>biodb-to-json.error_log`
-#              file_log = File.new("log", 'r')
-#              file_error_log = File.new("error_log", 'r')
-##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
-#              raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
+	      #              file_log = File.new("log", 'r')
+	      #              file_error_log = File.new("error_log", 'r')
+	      ##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
+	      #              raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
 
             elsif h_data_type[t.data_type_id] == 'quantitative'
               ### Quantitative track
@@ -205,17 +205,17 @@ namespace :jbrowse do
                 ### TO DO convert GFF -> WIG
                 puts "Conversion GFF -> WIG...\n" #can generate 2 separate tracks minus and plus ---©TODO---
                 ### to make it easier, when one send a gff file it must provide also a strand option set to minus or plus
-#                f_in = File.new(filename, 'r') or raise "Cannot open #{filename}!"
-#                f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
-#                f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
-#                h_orient={'-' => 'minus', '+' => 'plus'}
-#               
-#                while (line = f_in.gets.chomp)
-#                  if ! line.match(/^\#/)                    
-#                    tab = line.split("\t")
-#                    end
-#                  end
-#                end
+		#                f_in = File.new(filename, 'r') or raise "Cannot open #{filename}!"
+		#                f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
+		#                f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
+		#                h_orient={'-' => 'minus', '+' => 'plus'}
+		#               
+		#                while (line = f_in.gets.chomp)
+		#                  if ! line.match(/^\#/)                    
+		#                    tab = line.split("\t")
+		#                    end
+		#                  end
+		#                end
 
               elsif h_file_type[t.file_type_id] == 'bed'
                 ### TO DO convert BED -> WIG
@@ -225,13 +225,13 @@ namespace :jbrowse do
               ### assume we have a WIG file to process named wig_file
               ###executing jbrowse script                                                                                   
               puts "==> Executing wig2png...\n";             
-               output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_base} #{t.jbrowse_params}`
+	      output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_base} #{t.jbrowse_params}`
               raise "Error executing wig2png: #{output}" unless (output == '')
-             
+	      
             end
-                        
+	    
           end
-                    
+	  
           ### if arrives here, means that everything worked fine
           t.update_attributes({:status_id => h_status['success']})
 

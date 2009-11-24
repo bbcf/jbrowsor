@@ -12,15 +12,13 @@ class CreateGenomes < ActiveRecord::Migration
       t.text :error_log
       t.timestamps
     end
-        execute "ALTER TABLE genomes ADD CONSTRAINT frontend_session_id_fkey FOREIGN KEY (frontend_session_id) REFERENCES frontend_sessions (id);
-ALTER TABLE genomes ADD CONSTRAINT status_id_fkey FOREIGN KEY (status_id) REFERENCES statuses (id); 
-" 
+    execute "ALTER TABLE genomes ADD CONSTRAINT frontend_session_id_fkey_genomes FOREIGN KEY (frontend_session_id) REFERENCES frontend_sessions (id);"
+    execute "ALTER TABLE genomes ADD CONSTRAINT status_id_fkey_genomes FOREIGN KEY (status_id) REFERENCES statuses (id);" 
   end
 
   def self.down
-     execute "ALTER TABLE genomes DROP CONSTRAINT frontend_session_id_fkey;  
-   ALTER TABLE genomes DROP CONSTRAINT status_id_fkey;
-";
+    execute "ALTER TABLE genomes DROP CONSTRAINT frontend_session_id_fkey_genomes;"
+    execute "ALTER TABLE genomes DROP CONSTRAINT status_id_fkey_genomes;"
     drop_table :genomes
   end
 end

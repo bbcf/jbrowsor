@@ -5,11 +5,11 @@ class CreateJbrowseViews < ActiveRecord::Migration
       t.boolean :permanent_public
       t.timestamps
     end
-      execute "ALTER TABLE jbrowse_views ADD CONSTRAINT frontend_session_id_fkey FOREIGN KEY (frontend_session_id) REFERENCES frontend_sessions (id);"
+    execute "ALTER TABLE jbrowse_views ADD CONSTRAINT frontend_session_id_fkey_jbrowse_views FOREIGN KEY (frontend_session_id) REFERENCES frontend_sessions (id);"
   end
 
   def self.down
-    execute "ALTER TABLE jbrowse_views DROP CONSTRAINT frontend_session_id_fkey;"
+    execute "ALTER TABLE jbrowse_views DROP CONSTRAINT frontend_session_id_fkey_jbrowse_views;"
     drop_table :jbrowse_views
   end
 end
