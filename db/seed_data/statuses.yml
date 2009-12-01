@@ -1,0 +1,15 @@
+pending:
+  id: 1
+  name: pending
+
+running:
+  id: 2
+  name: running
+
+success:
+  id: 3
+  name: success
+
+failure:
+  id: 4
+  name: failure

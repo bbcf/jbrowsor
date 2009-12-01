@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.datetime "updated_at"
   end
 
-  add_index "jbrowse_views", ["frontend_session_id"], :name => "frontend_session_id_fkey_jbrowse_views"
+  add_index "jbrowse_views", ["frontend_session_id"], :name => "frontend_session_id_fkey"
 
   create_table "jobs", :force => true do |t|
     t.integer  "runnable_id"

@@ -1,0 +1,14 @@
+gff:
+  id: 1
+  name: gff
+  description: General Feature Format. from the Sanger Institute
+
+wig:
+  id: 2
+  name: wig
+  description: Wiggle format for dense continuous data
+
+bed:
+  id: 3
+  name: bed
+  description: Genomic regions
