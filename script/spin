@@ -1,2 +1,2 @@
 # File: script/spin
-mongrel_rails cluster::start -C /path/current/config/mongrel_cluster.yml
+mongrel_cluster_ctl start -c /path/current/config/mongrel_cluster.yml
