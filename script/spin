@@ -1,2 +1,2 @@
 # File: script/spin
-mongrel_cluster_ctl start -c config/mongrel_cluster.yml
+mongrel_cluster_ctl start -c /home/rails/config/jbrowsor/mongrel_cluster.yml
