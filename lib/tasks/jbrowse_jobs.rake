@@ -33,7 +33,7 @@ namespace :jbrowse do
     Status.find(:all).map{|s| h_status[s.name]=s.id}
     
 
-    while ()
+    while (1)
       
       ######################## GENOMES
       
