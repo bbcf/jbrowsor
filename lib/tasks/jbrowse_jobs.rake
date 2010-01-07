@@ -73,35 +73,39 @@ namespace :jbrowse do
           
             ###writing file / computing size
             puts "==> Writing file...\n"
+            compress_extension = (url.to_s.match(/fa.gz$/)) ? '.gz' : ''
             new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}/"
             Dir.mkdir(new_dir) 
             filename_new = new_dir + "/_refseqs.fa"
-            File.open(filename_new, 'w') {|f| f.write(res) }
+            File.open(filename_new + compress_extension, 'w') {|f| f.write(res) }
+            system("gunzip #{filename_new}.gz") if (compress_extension == '.gz')
             file_size = File.size(filename_new)
-            
+                        
             ###comparing public genome files / verifying uniqueness of file
             puts "==> Comparing public genome files...\n"
             existing_genomes.reject{|e| e.public == false}.each do |e|
               filename_ex=jbrowse_data_dir + "/#{e.id}_#{e.tax_id}/_refseqs.fa"
               puts "--->Comparing with #{filename_ex}\n";
               puts "File.size(filename_ex) == file_size\n"
-            puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
+              puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
               if (File.size(filename_ex)==file_size && 
                   `diff #{filename_new} #{filename_ex}`.chomp == '')
                 File.delete(filename_new)
                 Dir.rmdir(new_dir)
                 raise "A public genome already exists on the server. You should use the existing genomes_ID."
-	      # break
+                # break
               end
             end
             
             ###executing jbrowse script
             puts "==> Executing prepare-refseqs.pl...\n";
             Dir.chdir(new_dir) do
-              output = `#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta _refseqs.fa  --refs '#{g.chr_list}'`                   
+              cmd = "#{ jbrowse_bin_dir}/prepare-refseqs.pl --fasta _refseqs.fa  --refs '#{ g.chr_list}'"
+              puts cmd + "\n"
+              output = `#{cmd}`                   
               raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
             end
-          
+            puts "Done\n"
             g.update_attributes({:status_id => h_status['success']})
             
           rescue Exception => er

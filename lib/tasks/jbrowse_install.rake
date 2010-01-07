@@ -22,12 +22,14 @@ namespace :jbrowse do
 	File.symlink(codepath + "jslib", linkpath + "jslib")
 	p "make -C #{codepath}"
 
-        unless os == "Darwin"
-	  $stderr.puts "Error building binaries for jbrowse" unless system "make -C #{codepath}"
-	else
-	  gcc_lib_args = "/opt/local/lib"
-	  gcc_inc_args = "/opt/local/include"
-	  $stderr.puts "Error building binaries for jbrowse" unless system "make  GCC_LIB_ARGS=-L#{gcc_lib_args} GCC_INC_ARGS=-I#{gcc_inc_args} -C #{codepath}"
+        if os == "Darwin" 
+          gcc_lib_args = ["/opt/local/lib", "/usr/X11/lib"]
+	  gcc_inc_args = ["/opt/local/include", "/usr/X11/include"]
+          cmd = "make  GCC_LIB_ARGS='" + gcc_lib_args.map{ |e| "-L#{ e}"}.join(' ') + "' GCC_INC_ARGS='" + gcc_inc_args.map{|e| "-I#{e}"}.join(' ') + "' -C #{codepath}"
+	  puts cmd + "\n"
+          $stderr.puts "Error building binaries for jbrowse" unless system cmd
+        else
+          $stderr.puts "Error building binaries for jbrowse" unless system "make -C #{codepath}"
         end
       end
     end
