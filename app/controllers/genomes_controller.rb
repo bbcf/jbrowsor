@@ -29,8 +29,6 @@ class GenomesController < ApplicationController
 #      format.xml  {   render :xml => @genomes }
       format.csv  {   render :csv => @buf }
     end
-}'''']
-
   end
 
   def new
