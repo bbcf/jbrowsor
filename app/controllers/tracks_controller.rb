@@ -1,3 +1,5 @@
+require "csv"
+
 class TracksController < ApplicationController
 
 require 'digest/sha1'
@@ -6,6 +8,20 @@ require 'digest/sha1'
   # GET /tracks.xml
   def new
      @track = Track.new
+  end
+
+  def show
+    @track = Track.find(params[:id])
+    fields=['id', 'status_id','error_log'] #'name','genome_id', 'file_type_id', 'data_type_id', 'url', 'jbrowse_params', 'status_id', 'base_filename', 'error_log', 'strand_plus','created_at','updated_at']
+    @buf = fields.join(',') + "\n"
+    row=fields.map{|f| eval("@track.#{f}.to_s")}
+    CSV.generate_row(row, fields.size, @buf)
+    
+    respond_to do |format|
+#      format.html # index.html.erb                     
+#      format.xml  {   render :xml => @tracks }
+      format.csv  {   render :csv => @buf }
+    end
   end
 
   # POST /tracks
