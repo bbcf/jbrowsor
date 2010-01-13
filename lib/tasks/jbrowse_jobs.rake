@@ -74,7 +74,7 @@ namespace :jbrowse do
             ###writing file / computing size
             puts "==> Writing file...\n"
             compress_extension = (url.to_s.match(/fa.gz$/)) ? '.gz' : ''
-            new_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}/"
+            new_dir=jbrowse_data_dir + "/#{g.id}/" #_#{g.tax_id}/"
             Dir.mkdir(new_dir) 
             filename_new = new_dir + "/_refseqs.fa"
             File.open(filename_new + compress_extension, 'w') {|f| f.write(res) }
@@ -84,7 +84,7 @@ namespace :jbrowse do
             ###comparing public genome files / verifying uniqueness of file
             puts "==> Comparing public genome files...\n"
             existing_genomes.reject{|e| e.public == false}.each do |e|
-              filename_ex=jbrowse_data_dir + "/#{e.id}_#{e.tax_id}/_refseqs.fa"
+              filename_ex=jbrowse_data_dir + "/#{e.id}/_refseqs.fa"  #_#{e.tax_id}/_refseqs.fa"
               puts "--->Comparing with #{filename_ex}\n";
               puts "File.size(filename_ex) == file_size\n"
               puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
@@ -92,8 +92,7 @@ namespace :jbrowse do
                   `diff #{filename_new} #{filename_ex}`.chomp == '')
                 File.delete(filename_new)
                 Dir.rmdir(new_dir)
-                raise "A public genome already exists on the server. You should use the existing genomes_ID."
-                # break
+                raise "A public genome already exists on the server. You should use the existing genomes_ID."               
               end
             end
             
@@ -157,18 +156,19 @@ namespace :jbrowse do
             res = Net::HTTP.get(url)
             
             ###writing file / computing size     
-            genome_base_dir=jbrowse_data_dir + "/#{g.id}_#{g.tax_id}"
+            genome_base_dir=jbrowse_data_dir + "/#{g.id}" #_#{g.tax_id}"
             file_type = h_file_type[t.file_type_id]
             puts "==>file type: #{file_type}, #{t.file_type_id}\n";
             filename="#{t.base_filename}.#{file_type}" #_" + t.url.match(/([^\/]+)$/)[0] # tried to put the filename but limiting size of the file in wig2png
-            filename_base=filename.match(/^(.+?)\.[^.]+$/)[0]
+            filename_base=t.base_filename              #filename.match(/^(.+?)\.[^.]+$/)[0]
             file_path=genome_base_dir + "/#{filename}"
             puts "==> Writing file #{file_path}...\n"
             file = File.open(file_path, 'w') or raise "Cannot open file #{file_path}!"
             file.write(res)
             file.close
-            
+
             ### Change directory to work locally on the file
+            puts "==>Change dir to #{genome_base_dir}\n"
             Dir.chdir(genome_base_dir) do
               
               if  h_data_type[t.data_type_id] == 'qualitative'
@@ -207,31 +207,32 @@ namespace :jbrowse do
                 
                 wig_file=filename ## by default the original file
                 
-                if h_file_type[t.file_type_id] == 'wig'
+                if h_file_type[t.file_type_id] == 'gff'
                   ### TO DO convert GFF -> WIG
                   puts "Conversion GFF -> WIG...\n" #can generate 2 separate tracks minus and plus ---©TODO---
-                  ### to make it easier, when one send a gff file it must provide also a strand option set to minus or plus
-                  #                f_in = File.new(filename, 'r') or raise "Cannot open #{filename}!"
-                  #                f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
-                  #                f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
-                  #                h_orient={'-' => 'minus', '+' => 'plus'}
-                  #               
-                  #                while (line = f_in.gets.chomp)
-                  #                  if ! line.match(/^\#/)                    
-                  #                    tab = line.split("\t")
-                  #                    end
-                  #                  end
-                  #                end
+                  ### to make it easier, when one sends a gff file it must provide also a strand option set to minus or plus
+                  #  f_in = File.new(filename, 'r') or raise "Cannot open #{filename}!"
+                  #  f_out_plus = File.new("#{filename_base}_plus.wig", 'w') or raise "Cannot open #{filename_base}_plus.wig!"
+                  #  f_out_minus = File.new("#{filename_base}_minus.wig", 'w') or raise "Cannot open #{filename_base}_minus.wig!"
+                  #  h_orient={'-' => 'minus', '+' => 'plus'}
+                  
+                  #  while (line = f_in.gets.chomp)
+                  #    if ! line.match(/^\#/)                    
+                  #      tab = line.split("\t")
+                  #    end
+                  #  end
                   
                 elsif h_file_type[t.file_type_id] == 'bed'
                   ### TO DO convert BED -> WIG
-                  puts "Conversion GFF -> WIG...\n"
+                  puts "Conversion BED -> WIG...\n"
                 end
                 
                 ### assume we have a WIG file to process named wig_file
                 ###executing jbrowse script                                                                                   
                 puts "==> Executing wig2png...\n";             
-                output = `#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_base} #{t.jbrowse_params}`
+                cmd = "#{jbrowse_bin_dir}/wig2png #{wig_file} ./data/tiles ./data/tracks #{filename_base} #{t.jbrowse_params}"
+                puts "#{cmd}\n"
+                output = `#{cmd}`
                 raise "Error executing wig2png: #{output}" unless (output == '')
                 
               end
@@ -262,4 +263,5 @@ namespace :jbrowse do
     end 
     
   end ### end task
+
 end  ### end namespace  

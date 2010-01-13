@@ -33,7 +33,12 @@ require 'digest/sha1'
     if @track.strand_plus
       strand_plus = (@track.strand_plus == true) ? 't' : 'f' 
     end
-    @track.base_filename =  Digest::SHA1.hexdigest(@track.url.to_s + strand_plus).crypt("7hs2ke").sub(/[\\]/, 'a1').sub(/[\/]/, 'a2')
+    rnd_string = random_string(10)
+    while(Track.find(:first, :conditions=>["base_filename = ?", rnd_string]))
+      rnd_string = random_string(10)
+    end
+    @track.base_filename = rnd_string 
+#Digest::SHA1.hexdigest(@track.url.to_s + strand_plus).crypt("7hs2ke").sub(/[\\]/, 'a1').sub(/[\/]/, 'a2')
     respond_to do |format|
       if @track.save
         Job.new(
@@ -57,5 +62,24 @@ require 'digest/sha1'
     end
   end
 
+  def  random_string(nber_char)
+    s=''
+    (1..nber_char).to_a.each do |e|
+      n = rand(61)
+      c=''
+      if (n<10)
+        n+=48
+        c=n.chr
+      elsif (n<36)
+#        n+=65
+        c=(65+n-10).chr
+      else
+        c=(97+n-36).chr
+#        c=n.chr
+      end      
+      s+=c
+    end
+    return s
+  end
 
 end
