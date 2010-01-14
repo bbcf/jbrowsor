@@ -12,15 +12,22 @@ require 'digest/sha1'
 
   def show
     @track = Track.find(params[:id])
-    fields=['id', 'status_id','error_log'] #'name','genome_id', 'file_type_id', 'data_type_id', 'url', 'jbrowse_params', 'status_id', 'base_filename', 'error_log', 'strand_plus','created_at','updated_at']
-    @buf = fields.join(',') + "\n"
-    row=fields.map{|f| eval("@track.#{f}.to_s")}
-    CSV.generate_row(row, fields.size, @buf)
-    
+    fields=['id', 'status_id','error_log'] 
+
     respond_to do |format|
 #      format.html # index.html.erb                     
 #      format.xml  {   render :xml => @tracks }
-      format.csv  {   render :csv => @buf }
+      format.csv  { 
+        @buf = fields.join(',') + "\n"
+        row=fields.map{|f| eval("@track.#{f}.to_s")}
+        CSV.generate_row(row, fields.size, @buf)
+        render :csv => @buf 
+      }
+      format.yaml { 
+        @track_selection = {}
+        fields.map{  |f| @track_selection[f] = eval("@track.#{f}")}
+        render :yaml => @track_selection 
+      }
     end
   end
 
