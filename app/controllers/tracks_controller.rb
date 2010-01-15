@@ -14,9 +14,14 @@ require 'digest/sha1'
     @track = Track.find(params[:id])
     fields=['id', 'status_id','error_log'] 
 
+    @h_track = {}
+    if params[:format]=='json' || params[:format]=='yaml'
+      fields.map{|f| @h_track[f] = eval("@track.#{f}")}
+    end
+    
     respond_to do |format|
-#      format.html # index.html.erb                     
-#      format.xml  {   render :xml => @tracks }
+      #      format.html # index.html.erb                     
+      #      format.xml  {   render :xml => @tracks }
       format.csv  { 
         @buf = fields.join(',') + "\n"
         row=fields.map{|f| eval("@track.#{f}.to_s")}
@@ -24,9 +29,10 @@ require 'digest/sha1'
         render :csv => @buf 
       }
       format.yaml { 
-        @track_selection = {}
-        fields.map{  |f| @track_selection[f] = eval("@track.#{f}")}
-        render :yaml => @track_selection 
+        render :yaml => @h_track 
+      }
+      format.json { 
+        render :json => @h_track
       }
     end
   end

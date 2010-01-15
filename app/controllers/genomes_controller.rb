@@ -6,6 +6,15 @@ class GenomesController < ApplicationController
     @genomes = Genome.find(:all, :conditions => ["public = ?", true])
     fields=['id', 'name','tax_id', 'species', 'url', 'chr_list', 'status_id', 'error_log', 'created_at', 'updated_at']
     
+    @genomes_data=[]
+    if params[:format] == 'yaml' || params[:format] == 'json'
+      @genomes.each do |g|
+        tmp_h = { }
+        fields.map{ |f| tmp_h[f]=eval("g.#{ f}")}
+        @genomes_data.push(tmp_h)
+      end
+    end
+
     respond_to do |format|
       # format.html # index.html.erb
       # format.xml  {  render :xml => @genomes }
@@ -17,8 +26,11 @@ class GenomesController < ApplicationController
         end
         render :csv => @buf 
       }
-      format.yaml { 
-        render :yaml => @genomes
+      format.yaml {
+        render :yaml => @genomes_data
+      }
+      format.json { 
+        render :json => @genomes_data
       }
     end
   end
@@ -26,7 +38,12 @@ class GenomesController < ApplicationController
   def show
     @genome = Genome.find(params[:id])
     fields=['id', 'status_id','error_log'] 
-  
+
+    @h_genome = {}
+    if params[:format] == 'yaml' || params[:format] == 'json'
+      fields.map{  |f| @h_genome[f] = eval("@genome.#{f}")}
+    end
+    
     respond_to do |format|
       # format.html       
       # format.xml  {   render :xml => @genomes }
@@ -37,9 +54,10 @@ class GenomesController < ApplicationController
         render :csv => @buf 
       }
       format.yaml { 
-        @genome_selection = {  }
-        fields.map{ |f| @genome_selection[f] = eval("@genome.#{f}")}
-        render :yaml => @genome_selection 
+        render :yaml => @h_genome 
+      }
+      format.json { 
+        render :json => @h_genome
       }
     end
   end
