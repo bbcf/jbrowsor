@@ -3,7 +3,7 @@ require "csv"
 class GenomesController < ApplicationController
 
   def index
-    @genomes = Genome.find(:all, :conditions => ["public = ?", true])
+    @genomes = Genome.find(:all, :conditions => ["public = ? and status_id = ?", true, 3])
     fields=['id', 'name','tax_id', 'species', 'url', 'chr_list', 'status_id', 'error_log', 'created_at', 'updated_at']
     
     @genomes_data=[]
