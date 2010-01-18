@@ -10,7 +10,7 @@ class GenomesController < ApplicationController
     if params[:format] == 'yaml' || params[:format] == 'json'
       @genomes.each do |g|
         tmp_h = { }
-        fields.map{ |f| tmp_h[f]=eval("g.#{ f}")}
+        fields.map{ |f| tmp_h[f]=eval("g.#{f}")}
         @genomes_data.push(tmp_h)
       end
     end
@@ -41,7 +41,7 @@ class GenomesController < ApplicationController
 
     @h_genome = {}
     if params[:format] == 'yaml' || params[:format] == 'json'
-      fields.map{  |f| @h_genome[f] = eval("@genome.#{f}")}
+      fields.map{ |f| @h_genome[f] = eval("@genome.#{f}")}
     end
     
     respond_to do |format|
