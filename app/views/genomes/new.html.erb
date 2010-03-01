@@ -6,7 +6,7 @@
 <tr><td>Species</td><td><%= f.text_field :species %></td></tr>
 <tr><td>URL</td><td><%= f.text_field :url %></td></tr>
 <tr><td>List of chromosomes (comma separated)</td><td><%= f.text_field :chr_list %></td></tr>
-<tr><td>Public genome</td><td><%= f.check_box :public %></td></tr>
+<tr><td>Hidden genome</td><td><%= f.check_box :hidden %></td></tr>
 </table>
 <%= f.submit "Create new genome" %>
 <% end %>

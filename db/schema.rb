@@ -30,14 +30,15 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.integer  "tax_id"
     t.string   "species"
     t.text     "chr_list"
-    t.integer  "frontend_session_id"
     t.integer  "status_id"
     t.text     "url"
-    t.boolean  "public",              :default => true
+    t.boolean  "hidden",     :default => false
     t.text     "error_log"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "genomes", ["status_id"], :name => "status_id_fkey_genomes"
 
   create_table "jbrowse_views", :force => true do |t|
     t.integer  "frontend_session_id"
@@ -45,6 +46,8 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "jbrowse_views", ["frontend_session_id"], :name => "frontend_session_id_fkey_jbrowse_views"
 
   create_table "jobs", :force => true do |t|
     t.integer  "runnable_id"
@@ -66,6 +69,9 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.datetime "updated_at"
   end
 
+  add_index "track_positions", ["jbrowse_view_id"], :name => "jbrowse_view_id_fkey_track_positions"
+  add_index "track_positions", ["track_id"], :name => "track_id_fkey_track_positions"
+
   create_table "tracks", :force => true do |t|
     t.text     "name"
     t.integer  "genome_id"
@@ -80,5 +86,10 @@ ActiveRecord::Schema.define(:version => 20091015225514) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "tracks", ["data_type_id"], :name => "data_type_id_fkey_tracks"
+  add_index "tracks", ["file_type_id"], :name => "file_type_id_fkey_tracks"
+  add_index "tracks", ["genome_id"], :name => "genome_id_fkey_tracks"
+  add_index "tracks", ["status_id"], :name => "status_id_fkey_tracks"
 
 end

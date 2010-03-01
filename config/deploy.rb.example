@@ -20,6 +20,7 @@ set :config_dir, "your config files"                       # location of server-
                                                            # (these files are not in scm)
 
 depend :remote, :command, "git"                            # required to fetch jbrowse code
+depend :remote, :gem, "daemons", ">=1.0.10"                # required for job_runner
 
 # If you are using Passenger mod_rails uncomment this:
 # if you're still using the script/reapear helper you will need
