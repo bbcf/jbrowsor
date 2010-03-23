@@ -1,10 +1,23 @@
 <% form_for(@track) do |f| %>
 <%= f.error_messages %>
+
 <table>
 <tr><td>Name</td><td><%= f.text_field :name %></td></tr>
-<tr><td>Genome</td><td><%= f.text_field :genome_id %></td></tr>
-<tr><td>Data type</td><td><%= f.text_field :data_type_id %></td></tr>
-<tr><td>File type</td><td><%= f.text_field :file_type_id %></td></tr>
+<tr><td>Genome</td><td><%= genome_selection(f) %></td></tr>
+<tr><td>Data type</td><td>
+<% data_types.each do |dt| %>
+ <%= f.label(:data_type_id, dt[0]) %>
+ <%= f.radio_button(:data_type_id, dt[1]) %>
+<% end %>
+</td></tr>
+
+<tr><td>File type</td><td>
+<% file_types.each do |ft| %>
+  <%= f.label(:file_type_id, ft[0]) %>
+  <%= f.radio_button(:file_type_id, ft[1]) %>
+<% end %>
+</td></tr>
+
 <tr><td>URL</td><td><%= f.text_field :url %></td></tr>
 <tr><td>Parameters</td><td><%= f.text_area :jbrowse_params %></td></tr> 
 <!--<tr><td>Strand_plus</td><td><%= f.check_box :strand_plus %></td></tr>-->

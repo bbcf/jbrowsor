@@ -1,9 +1,9 @@
 class Track < ActiveRecord::Base
   
   belongs_to :genome
-  belongs_to :statuses
-  belongs_to :data_types
-  belongs_to :file_types
+  belongs_to :status
+  belongs_to :data_type
+  belongs_to :file_type
   has_many :views, :through => :track_positions
   has_many :track_positions
   

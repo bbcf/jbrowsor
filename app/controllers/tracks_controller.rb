@@ -7,7 +7,10 @@ require 'digest/sha1'
   # GET /tracks
   # GET /tracks.xml
   def new
-     @track = Track.new
+    @track = Track.new
+    @genomes = Genome.find(:all, :order => "name", :conditions =>[ "hidden = false"]).map{|g| [g.name, g.id]}
+    @data_types = DataType.find(:all, :order => "name").map{|dt| [dt.name, dt.id]}
+    @file_types =  FileType.find(:all, :order => "name").map{|ft| [ft.name, ft.id]}
   end
 
   def show
@@ -75,7 +78,7 @@ require 'digest/sha1'
     end
   end
 
-  def  random_string(nber_char)
+  def random_string(nber_char)
     s=''
     (1..nber_char).to_a.each do |e|
       n = rand(61)
