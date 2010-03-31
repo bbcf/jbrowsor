@@ -65,21 +65,22 @@ class JbrowseViewsController < ApplicationController
     @jbrowse_view.track_positions.each do |tp|
       t = tp.track
       if t.status.name == "success"
-        tmp_h=
-          (t.data_type.name == "qualitative") ?
-        {
-          "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}.json",
-          "label" => t.name,
-          "type" => "FeatureTrack",
-          "key" => t.name
-        }
-        :
-          {
-          "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}/trackData.json",
-          "label" => t.name,
-          "type" => "ImageTrack",
-          "key" => t.name
-        }
+        tmp_h={ }
+        if (t.data_type.name == "qualitative")
+          tmp_h={
+            "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}.json",
+            "label" => t.name,
+            "type" => "FeatureTrack",
+            "key" => t.name
+          }
+        else
+          tmp_h= {
+            "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}/trackData.json",
+            "label" => t.name,
+            "type" => "ImageTrack",
+            "key" => t.name
+          }
+        end
         data.push(tmp_h)
       end
     end
