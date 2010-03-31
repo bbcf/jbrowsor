@@ -46,7 +46,7 @@ namespace :jbrowse do
         ### get existing genomes
         existing_genomes = Genome.find(:all, :conditions=>["status_id = ?", h_status['success']])
         if existing_genomes.size > 0
-          puts "Existing genomes:\n" + (existing_genomes.map{|e| "==>#{e.id}: #{e.name}; #{e.species}-#{e.tax_id}-" + ((e.public==true) ? "PUBLIC" : "private-#{e.frontend_session_id}-")}.join(", "))
+          puts "Existing genomes:\n" + (existing_genomes.map{|e| "==>#{e.id}: #{e.name}; #{e.species}-#{e.tax_id}-" + ((e.hidden==false) ? "PUBLIC" : "private-#{e.frontend_session_id}-")}.join(", "))
           
         else
           puts "No existing genomes yet.\n";
@@ -83,7 +83,7 @@ namespace :jbrowse do
                         
             ###comparing public genome files / verifying uniqueness of file
             puts "==> Comparing public genome files...\n"
-            existing_genomes.reject{|e| e.public == false}.each do |e|
+            existing_genomes.reject{|e| e.hidden == true}.each do |e|
               filename_ex=jbrowse_data_dir + "/#{e.id}/_refseqs.fa"  #_#{e.tax_id}/_refseqs.fa"
               puts "--->Comparing with #{filename_ex}\n";
               puts "File.size(filename_ex) == file_size\n"
