@@ -198,10 +198,10 @@ namespace :jbrowse do
                 ###### Execute biodb-to-json.pl
                 puts "==> Executing biodb-to-json.pl...\n";
                 output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json 1>biodb-to-json.log 2>biodb-to-json.error_log`
-                file_log = File.new("log", 'r')
-                file_error_log = File.new("error_log", 'r')
+                #file_log = File.new("log", 'r')
+                #file_error_log = File.new("error_log", 'r')
                 ##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
-                raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
+                #raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
                 
               elsif h_data_type[t.data_type_id] == 'quantitative'
                 ### Quantitative track
