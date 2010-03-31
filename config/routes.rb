@@ -41,7 +41,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources :frontend_sessions, :only => [:create, :destroy]
   map.resources :logo, :only => [:show]
-  map.resources :jbrowse_views, :only => [:create, :show]
+  map.resources :jbrowse_views, :only => [:new, :create, :show]
+  map.resources :track_positions, :only => [:create, :delete]
   map.resources :tracks, :only => [:new, :create, :show]
   map.resources :genomes, :only => [:index, :new, :create, :show, :update]
 
