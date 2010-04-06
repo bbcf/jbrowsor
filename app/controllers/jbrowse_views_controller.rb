@@ -13,7 +13,9 @@ class JbrowseViewsController < ApplicationController
       @jbrowse_view.save         
       ### create track_positions                                                                                                             
       if @jbrowse_view.track_list != ''
-        list_of_tracks = @jbrowse_view.track_list.split(/\s*,\s*/).select{ |id| id.match(/^\d+$/)}
+        list_of_track_ids = @jbrowse_view.track_list.split(/\s*,\s*/).select{ |id| id.match(/^\d+$/)}
+        list_of_tracks = Track.find(list_of_track_ids)
+        
         ### use first track in the list to determine the genome for the whole view and check then homogeneity of tracks regarding to genome
         ref_genome_id = list_of_tracks[0].track.genome_id
         list_of_tracks.select{|e| e.track.genome_id == ref_genome_id}.each_index do |i|
@@ -36,7 +38,7 @@ class JbrowseViewsController < ApplicationController
         }
       end
     rescue Exception => e
-      render :text => e.message
+      render :text => e.message + '<br/>' + list_of_tracks.to_json
     end
     #    end     
   end
