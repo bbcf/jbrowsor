@@ -8,35 +8,39 @@ class JbrowseViewsController < ApplicationController
 
     ### create json
 
-    respond_to do |format|
-      begin
-        @jbrowse_view.save         
-        ### create track_positions                                                                                                             
-        if @jbrowse_view.track_list != ''
-          list_of_tracks = @jbrowse_view.track_list.split(/\s*,\s*/).select{ |id| id.match(/^\d+$/)}
-          ### use first track in the list to determine the genome for the whole view and check then homogeneity of tracks regarding to genome
-          ref_genome_id = list_of_tracks[0].track.genome_id
-          list_of_tracks.select{|e| e.track.genome_id == ref_genome_id}.each_index do |i|
-            id = list_of_tracks[i]
-            track = Track.find(id)
-            track_pos = TrackPosition.new(
-                                          :jbrowse_view_id => @jbrowse_view.id, 
-                                          :track_id => track.id, 
-                                          :position => i
-                                          )
-            track_pos.save
-          end
+    #    respond_to do |format|
+    begin
+      @jbrowse_view.save         
+      ### create track_positions                                                                                                             
+      if @jbrowse_view.track_list != ''
+        list_of_tracks = @jbrowse_view.track_list.split(/\s*,\s*/).select{ |id| id.match(/^\d+$/)}
+        ### use first track in the list to determine the genome for the whole view and check then homogeneity of tracks regarding to genome
+        ref_genome_id = list_of_tracks[0].track.genome_id
+        list_of_tracks.select{|e| e.track.genome_id == ref_genome_id}.each_index do |i|
+          id = list_of_tracks[i]
+          track = Track.find(id)
+          track_pos = TrackPosition.new(
+                                        :jbrowse_view_id => @jbrowse_view.id, 
+                                        :track_id => track.id, 
+                                        :position => i
+                                        )
+          track_pos.save
         end
-        
+      end
+ 
+      respond_to do |format|  
         format.html
         format.xml {render :layout => false}
-        format.json {render :layout => false, :json => @jbrowse_view.id.to_json}
-      rescue Exception => e
-        render :status => 403
+        format.json {
+         render :json => { :id => @jbrowse_view.id}.to_json
+        }
       end
-    end     
+    rescue Exception => e
+      render :text => e.message
+    end
+    #    end     
   end
-
+  
   # GET /jbrowse_views/1
   # GET /jbrowse_views/1.xml
   def show

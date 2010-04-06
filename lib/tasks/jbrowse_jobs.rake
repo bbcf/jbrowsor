@@ -185,7 +185,7 @@ namespace :jbrowse do
                 puts "Write config file...\n"
                 f_conf_file = File.new("conf_file.json", 'w') or raise "Cannot open file conf_file.json!"
                 conf_data = JSON.parse(t.jbrowse_params)
-                conf_data['tracks'][0]['track']=#{t.base_filename}
+                conf_data['tracks'][0]['track']=t.base_filename
                 conf_data['description']="Database Test"                
                 conf_data['db_adaptor']="Bio::DB::SeqFeature::Store"
                 conf_data['db_args']={
