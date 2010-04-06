@@ -17,10 +17,9 @@ class JbrowseViewsController < ApplicationController
         list_of_tracks = Track.find(list_of_track_ids)
         
         ### use first track in the list to determine the genome for the whole view and check then homogeneity of tracks regarding to genome
-        ref_genome_id = list_of_tracks[0].track.genome_id
-        list_of_tracks.select{|e| e.track.genome_id == ref_genome_id}.each_index do |i|
-          id = list_of_tracks[i]
-          track = Track.find(id)
+        ref_genome_id = list_of_tracks[0].genome_id
+        list_of_tracks.select{|e| e.genome_id == ref_genome_id}.each_index do |i|
+          track = list_of_tracks[i]
           track_pos = TrackPosition.new(
                                         :jbrowse_view_id => @jbrowse_view.id, 
                                         :track_id => track.id, 
