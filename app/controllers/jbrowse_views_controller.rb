@@ -52,11 +52,12 @@ class JbrowseViewsController < ApplicationController
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     ### take first track to get the genome_id
     cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
+
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
     #    File.open(file, 'r') {|f| f.read(res) }
     json = IO.readlines(file).join(' ')
     all_data = JSON.parse(json)
-    data = all_data[json]
+#    data = all_data['trackInfo']
 #    data = [
 #            { 
 #              "url" => "data/seq/{refseq}/",
@@ -86,13 +87,20 @@ class JbrowseViewsController < ApplicationController
             "key" => t.name
           }
         end
-        data.push(tmp_h)
+        all_data['trackInfo'].push(tmp_h)
       end
     end
 
+    file = File.new("#{ jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
+    json = IO.readlines(file).join(' ')
+    refseq = JSON.parse(json)
+    all_data['refSeqs']=refseq['refSeqs']
+#    data = all_data[json]
+    
+
     respond_to do |format|
       format.html # show.html.erb
-      format.js # show.js.rjs
+      format.js { render :json => all_data.to_json}# show.js.rjs
     end
   end
 
