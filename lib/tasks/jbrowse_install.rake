@@ -26,6 +26,7 @@ namespace :jbrowse do
 	File.symlink(codepath + "genome.css", linkpath + "genome.css")
 	File.symlink(codepath + "js", linkpath + "js")
 	File.symlink(codepath + "jslib", linkpath + "jslib")
+        File.symlink(codepath + "img", linkpath + "img")
         File.symlink(jbrowse_data_dir, linkpath + "data")
         
 	p "make -C #{codepath}"
