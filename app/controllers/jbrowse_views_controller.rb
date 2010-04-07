@@ -73,14 +73,14 @@ class JbrowseViewsController < ApplicationController
           tmp_h={
             "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
             "label" => t.name,
-            "type" => "FeatureTrack",
+            "type" => "ImageTrack",
             "key" => t.name
           }
         else
           tmp_h= {
             "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}/trackData.json",
             "label" => t.name,
-            "type" => "ImageTrack",
+            "type" => "FeatureTrack",
             "key" => t.name
           }
         end
