@@ -69,7 +69,7 @@ class JbrowseViewsController < ApplicationController
       t = tp.track
       if t.status.name == "success"
         tmp_h={ }
-        if (t.data_type.name == "qualitative")
+        if (t.data_type.name == "quantitative")
           tmp_h={
             "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
             "label" => t.name,
