@@ -62,7 +62,8 @@ class JbrowseViewsController < ApplicationController
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
-    all_data['trackInfo'] = JSON.parse(json)
+    all_data['trackInfo'] = []
+    all_data['trackInfo'].push(JSON.parse(json)[0])
     
     @jbrowse_view.track_positions.each do |tp|
       t = tp.track
