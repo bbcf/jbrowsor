@@ -55,7 +55,7 @@ class JbrowseViewsController < ApplicationController
 
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
     #    File.open(file, 'r') {|f| f.read(res) }
-    json = IO.readlines(file).join(' ')
+    json = file.readlines.join(' ')
     all_data = JSON.parse(json)
 #    data = all_data['trackInfo']
 #    data = [
@@ -92,7 +92,7 @@ class JbrowseViewsController < ApplicationController
     end
 
     file = File.new("#{ jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
-    json = IO.readlines(file).join(' ')
+    json = file.readlines.join(' ')
     refseq = JSON.parse(json)
     all_data['refSeqs']=refseq['refSeqs']
 #    data = all_data[json]
