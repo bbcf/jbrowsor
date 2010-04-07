@@ -88,7 +88,8 @@ class JbrowseViewsController < ApplicationController
     end
 
     all_data['trackInfo'].each do |e|
-      e["url"] = APP_CONFIG['jbrowsor_server'] + "jbrowse/data/#{cur_genome_id}/" + e["url"]
+      e["url"] = #APP_CONFIG['jbrowsor_server'] + 
+        "data/#{cur_genome_id}/" + e["url"]
     end
 
 
@@ -99,7 +100,8 @@ class JbrowseViewsController < ApplicationController
     #    data = all_data[json]
     
     all_data['refSeqs'].each do |e|
-      e["seqDir"] = APP_CONFIG['jbrowsor_server'] + "jbrowse/data/#{cur_genome_id}/" + e["seqDir"]
+      e["seqDir"] = #APP_CONFIG['jbrowsor_server'] + 
+        "data/#{cur_genome_id}/" + e["seqDir"]
     end
 
     
