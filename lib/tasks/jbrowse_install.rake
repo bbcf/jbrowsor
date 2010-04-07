@@ -1,6 +1,12 @@
 namespace :jbrowse do
   desc "Installs jbrowse code into JbrowseoR"
   task :install, [:version] do |t, args|
+
+    ### Use rails enviroment                                                                                                          
+    require "#{RAILS_ROOT}/config/environment"
+    
+    jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
+
     codepath = Pathname.new(RAILS_ROOT) + "jbrowse"
     linkpath = Pathname.new(RAILS_ROOT) + "public" + "jbrowse"
     os = `uname`.chomp
@@ -20,6 +26,8 @@ namespace :jbrowse do
 	File.symlink(codepath + "genome.css", linkpath + "genome.css")
 	File.symlink(codepath + "js", linkpath + "js")
 	File.symlink(codepath + "jslib", linkpath + "jslib")
+        File.symlink(jbrowse_data_dir, linkpath + "data")
+        
 	p "make -C #{codepath}"
 
         if os == "Darwin" 

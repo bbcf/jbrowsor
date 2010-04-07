@@ -70,14 +70,14 @@ class JbrowseViewsController < ApplicationController
         tmp_h={ }
         if (t.data_type.name == "qualitative")
           tmp_h={
-            "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}.json",
+            "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
             "label" => t.name,
             "type" => "FeatureTrack",
             "key" => t.name
           }
         else
           tmp_h= {
-            "url" => 'data/tracks/{ refseq}' + "/#{t.base_filename}/trackData.json",
+            "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}/trackData.json",
             "label" => t.name,
             "type" => "ImageTrack",
             "key" => t.name
@@ -87,18 +87,28 @@ class JbrowseViewsController < ApplicationController
       end
     end
 
-    file = File.new("#{ jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
+    all_data['trackInfo'].each do |e|
+      e["url"] = APP_CONFIG['jbrowsor_server'] + "jbrowse/data/#{cur_genome_id}/" + e["url"]
+    end
+
+
+    file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*refSeqs\s*=\s*/,'')
     all_data['refSeqs']=JSON.parse(json)
     #    data = all_data[json]
     
+    all_data['refSeqs'].each do |e|
+      e["seqDir"] = APP_CONFIG['jbrowsor_server'] + "jbrowse/data/#{cur_genome_id}/" + e["seqDir"]
+    end
+
     
     respond_to do |format|
       format.html # show.html.erb
       format.js { 
         render :json => 
-        all_data.keys.map{|k| "#{k} = #{all_data[k].to_json};"}. join("\n")
+        all_data.keys.map{|k| 
+          "#{k} = #{all_data[k].to_json};"}. join("\n")
       }# show.js.rjs
     end
   end
