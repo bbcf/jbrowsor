@@ -1,9 +1,13 @@
 class JbrowseViewsController < ApplicationController
 
+  ### Json parsing                                  
+  require 'json'
+
   # POST /jbrowse_views
   # POST /jbrowse_views.xml
   # preliminary
-  def create
+
+   def create
      @jbrowse_view = JbrowseView.new(params[:jbrowse_view])
 
     ### create json
