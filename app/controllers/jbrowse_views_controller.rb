@@ -52,26 +52,18 @@ class JbrowseViewsController < ApplicationController
     @jbrowse_view = JbrowseView.find(params[:id])
     @id = params[:id]
     
+    all_data={ }
+  
     ### get track_positions and create json from data                                                                                                          
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     ### take first track to get the genome_id
     cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
-
+    
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
-    #    File.open(file, 'r') {|f| f.read(res) }
     json = file.readlines.join(' ')
-    all_data = JSON.parse(json)
-#    data = all_data['trackInfo']
-#    data = [
-#            { 
-#              "url" => "data/seq/{refseq}/",
-#              "args" => {
-#                "chunkSize" => 20000
-#              },
-#              "label" => "DNA",
-#              "type" => "SequenceTrack",
-#              "key" => "DNA"
-#            }]
+    json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
+    all_data['trackInfo'] = JSON.parse(json)
+    
     @jbrowse_view.track_positions.each do |tp|
       t = tp.track
       if t.status.name == "success"
@@ -99,13 +91,16 @@ class JbrowseViewsController < ApplicationController
     json = file.readlines.join(' ')
     refseq = JSON.parse(json)
     all_data['refSeqs']=refseq['refSeqs']
-#    data = all_data[json]
+    #    data = all_data[json]
     
-
+    
     respond_to do |format|
       format.html # show.html.erb
-      format.js { render :json => all_data.to_json}# show.js.rjs
+      format.js { 
+        render :json => 
+        all_data.keys.map{|k| "#{k} = #{all_data[k].to_json};"}. join("\n")
+      }# show.js.rjs
     end
   end
-
+  
 end
