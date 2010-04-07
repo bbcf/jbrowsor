@@ -89,8 +89,8 @@ class JbrowseViewsController < ApplicationController
 
     file = File.new("#{ jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
     json = file.readlines.join(' ')
-    refseq = JSON.parse(json)
-    all_data['refSeqs']=refseq['refSeqs']
+    json.gsub!(/^\s*refSeqs\s*=\s*/,'')
+    all_data['refSeqs']=JSON.parse(json)
     #    data = all_data[json]
     
     
