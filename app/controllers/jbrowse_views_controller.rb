@@ -52,13 +52,17 @@ class JbrowseViewsController < ApplicationController
     @jbrowse_view = JbrowseView.find(params[:id])
     @id = params[:id]
     
-    all_data={ }
-  
-    ### get track_positions and create json from data                                                                                                          
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
-    ### take first track to get the genome_id
+   
+    ### take first track to get the genome_id                                                                       
     cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
     
+    all_data={ 
+      'var browserRoot'  => APP_CONFIG['jbrowsor_server'] + "jbrowse/",
+      'var dataRoot'     => APP_CONFIG['jbrowsor_server'] + "jbrowse/data/#{cur_genome_id}/"
+    }
+  
+    ### get track_positions and create json from data                                                                                                          
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
@@ -98,6 +102,7 @@ class JbrowseViewsController < ApplicationController
     json = file.readlines.join(' ')
     json.gsub!(/^\s*refSeqs\s*=\s*/,'')
     all_data['refSeqs']=JSON.parse(json)
+    
     #    data = all_data[json]
     
 #    all_data['refSeqs'].each do |e|
