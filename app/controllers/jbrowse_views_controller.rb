@@ -88,10 +88,10 @@ class JbrowseViewsController < ApplicationController
       end
     end
 
-    all_data['trackInfo'].each do |e|
-      e["url"] = #APP_CONFIG['jbrowsor_server'] + 
-        "data/#{cur_genome_id}/" + e["url"]
-    end
+#    all_data['trackInfo'].each do |e|
+#      e["url"] = #APP_CONFIG['jbrowsor_server'] + 
+#        "data/#{cur_genome_id}/" + e["url"]
+#    end
 
 
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
@@ -100,10 +100,10 @@ class JbrowseViewsController < ApplicationController
     all_data['refSeqs']=JSON.parse(json)
     #    data = all_data[json]
     
-    all_data['refSeqs'].each do |e|
-      e["seqDir"] = #APP_CONFIG['jbrowsor_server'] + 
-        "data/#{cur_genome_id}/" + e["seqDir"]
-    end
+#    all_data['refSeqs'].each do |e|
+#      e["seqDir"] = #APP_CONFIG['jbrowsor_server'] + 
+#        "data/#{cur_genome_id}/" + e["seqDir"]
+#    end
 
     
     respond_to do |format|
