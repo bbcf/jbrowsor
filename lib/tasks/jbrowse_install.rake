@@ -28,7 +28,8 @@ namespace :jbrowse do
 	File.symlink(codepath + "jslib", linkpath + "jslib")
         File.symlink(codepath + "img", linkpath + "img")
         File.symlink(jbrowse_data_dir, linkpath + "data")
-        
+        File.symlink(jbrowse_views_dir, linkpath + "views")
+       
 	p "make -C #{codepath}"
 
         if os == "Darwin" 
