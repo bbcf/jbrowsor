@@ -67,6 +67,7 @@ class JbrowseViewsController < ApplicationController
         
         ### mv names and remove temporary dir
         FileUtils.mv tmp_dir + "/names", jbrowse_view_data_dir
+        FileUtils.cp "#{tmp_dir}/trackInfo.js", jbrowse_view_data_dir
         FileUtils.rm_r tmp_dir
         FileUtils.rm jbrowse_view_data_dir + "refSeqs.js" ##  no need
       end
@@ -135,13 +136,13 @@ class JbrowseViewsController < ApplicationController
       'var dataRoot'     => "/jbrowse/views/#{@jbrowse_view.id}/"     #"/jbrowse/data/#{cur_genome_id}/"
     }
 
-    file = File.new("#{jbrowse_view_dir}/trackInfo.js")
+    file = File.new("#{jbrowse_view_dir}/data/trackInfo.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
-    source_file =  File.new("#{ jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
+    source_file =  File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
     all_data['trackInfo']=generate_trackInfo(source_file, @jbrowse_view)
 
-    file = File.new("#{jbrowse_view_dir}/refSeqs.js")
+    file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*refSeqs\s*=\s*/,'')
     all_data['refSeqs']=JSON.parse(json)
