@@ -60,7 +60,7 @@ class JbrowseViewsController < ApplicationController
         ### run generate_names.pl
         Dir.chdir("#{tmp_dir}") do
           jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-          cmd = "#{jbrowse_bin_dir}/generate-names.pl"
+          cmd = "#{jbrowse_bin_dir}/generate-names.pl --dir ./"
           puts cmd + "\n"
           output = `#{cmd}`
         end
