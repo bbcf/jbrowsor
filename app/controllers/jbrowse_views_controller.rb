@@ -2,7 +2,7 @@ class JbrowseViewsController < ApplicationController
 
   ### Json parsing                                  
   require 'json'
-  require 'FileUtils'
+  require 'fileutils'
 
   # POST /jbrowse_views
   # POST /jbrowse_views.xml
