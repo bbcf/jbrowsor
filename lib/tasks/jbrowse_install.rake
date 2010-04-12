@@ -6,6 +6,7 @@ namespace :jbrowse do
     require "#{RAILS_ROOT}/config/environment"
     
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
+    jbrowse_views_dir = APP_CONFIG["jbrowse_views"]
 
     codepath = Pathname.new(RAILS_ROOT) + "jbrowse"
     linkpath = Pathname.new(RAILS_ROOT) + "public" + "jbrowse"
