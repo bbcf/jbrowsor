@@ -17,6 +17,8 @@ class JbrowseViewsController < ApplicationController
     begin
       @jbrowse_view.save         
 
+      jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
+
       ### create directory and symbolic links for the view
       jbrowse_view_dir=Pathname.new(APP_CONFIG['jbrowse_views']) + @jbrowse_view.id.to_s
       Dir.mkdir(jbrowse_view_dir)
@@ -58,7 +60,7 @@ class JbrowseViewsController < ApplicationController
         ### run generate_names.pl
         Dir.chdir("#{tmp_dir}/data") do
           jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-          cmd = "#{jbrowse_bin_dir}/generate_names.pl"
+          cmd = "#{jbrowse_bin_dir}/generate-names.pl"
           puts cmd + "\n"
           output = `#{cmd}`
         end
