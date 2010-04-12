@@ -100,14 +100,14 @@ class JbrowseViewsController < ApplicationController
         if (t.data_type.name == "quantitative")
           tmp_h={
             "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
-            "label" => t.name,
+            "label" => t.base_filename,
             "type" => "ImageTrack",
             "key" => t.name
           }
             else
           tmp_h= {
             "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}/trackData.json",
-            "label" => t.name,
+            "label" => t.base_filename,
             "type" => "FeatureTrack",
             "key" => t.name
           }
