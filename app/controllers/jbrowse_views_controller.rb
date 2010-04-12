@@ -55,10 +55,10 @@ class JbrowseViewsController < ApplicationController
         ### create trackInfo.js        
         source_file =  File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
         trackInfo = generate_trackInfo(source_file, @jbrowse_view)
-        File.open("#{tmp_dir}/data/trackInfo.js", 'w') {|f| f.write("trackInfo = " + trackInfo.to_json + ";") }
+        File.open("#{tmp_dir}/trackInfo.js", 'w') {|f| f.write("trackInfo = \n" + trackInfo.to_json) }
         
         ### run generate_names.pl
-        Dir.chdir("#{tmp_dir}/data") do
+        Dir.chdir("#{tmp_dir}") do
           jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
           cmd = "#{jbrowse_bin_dir}/generate-names.pl"
           puts cmd + "\n"
@@ -66,7 +66,7 @@ class JbrowseViewsController < ApplicationController
         end
         
         ### mv names and remove temporary dir
-        FileUtils.mv tmp_dir + "/data/names", jbrowse_view_data_dir
+        FileUtils.mv tmp_dir + "/names", jbrowse_view_data_dir
         FileUtils.rm_r tmp_dir
         FileUtils.rm jbrowse_view_data_dir + "refSeqs.js" ##  no need
       end
