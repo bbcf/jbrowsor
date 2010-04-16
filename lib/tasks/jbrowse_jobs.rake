@@ -1,24 +1,27 @@
 # -*- coding: iso-8859-1 -*-
 namespace :jbrowse do
+  
   desc "Process jobs in the queue: first add new genomes, then add new tracks"
   task :jobs, [:version] do |t, args|
 
-    ### Use rails enviroment
-    require "#{RAILS_ROOT}/config/environment" 
+    ### Use rails enviroment                                                                                                                    
+    require "#{  RAILS_ROOT}/config/environment"
 
-    ### Require Net::HTTP
+    ### Require Net::HTTP                                                                                                                       
     require 'net/http'
     require 'uri'
-
-    ### Json parsing
+    
+    ### Json parsing                                                                                                                            
     require 'json'
-
+    
     require 'ftools'
-
-    ###Initialize variables
+    require 'open-uri'
+    require 'find'
+    
+    ###Initialize variables                                                                                                                     
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-    puts "APP_CONFIG\[jbrowse_data\] = #{jbrowse_data_dir}\n"
+    puts "APP_CONFIG\[jbrowse_data\] = #{  jbrowse_data_dir}\n"
     if  !File.exist?(jbrowse_data_dir)
       if jbrowse_data_dir != nil && jbrowse_data_dir != ''
         genome_data_dir = jbrowse_data_dir + "/genomes"
@@ -26,7 +29,7 @@ namespace :jbrowse do
         $stderr.puts "Jbrowse directory is not properly set in your config.yml"
       end
     end
-
+    
     ### get statuses 
     puts "Getting statuses...\n";
     h_status={}
@@ -69,41 +72,88 @@ namespace :jbrowse do
             ###get fasta file
             puts "==> Getting #{g.url}...\n"
             url = URI.parse(g.url)
-            res = Net::HTTP.get(url)
-          
-            ###writing file / computing size
-            puts "==> Writing file...\n"
-            compress_extension = (url.to_s.match(/fa.gz$/)) ? '.gz' : ''
-            new_dir=jbrowse_data_dir + "/#{g.id}/" #_#{g.tax_id}/"
-            Dir.mkdir(new_dir) 
-            filename_new = new_dir + "/_refseqs.fa"
-            File.open(filename_new + compress_extension, 'w') {|f| f.write(res) }
-            system("gunzip #{filename_new}.gz") if (compress_extension == '.gz')
-            file_size = File.size(filename_new)
-                        
-            ###comparing public genome files / verifying uniqueness of file
-            puts "==> Comparing public genome files...\n"
-            existing_genomes.reject{|e| e.hidden == true}.each do |e|
-              filename_ex=jbrowse_data_dir + "/#{e.id}/_refseqs.fa"  #_#{e.tax_id}/_refseqs.fa"
-              puts "--->Comparing with #{filename_ex}\n";
-              puts "File.size(filename_ex) == file_size\n"
-              puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
-              if (File.size(filename_ex)==file_size && 
-                  `diff #{filename_new} #{filename_ex}`.chomp == '')
-                File.delete(filename_new)
-                Dir.rmdir(new_dir)
-                raise "A public genome already exists on the server. You should use the existing genomes_ID."               
-              end
+            compress_extension=''
+            if url.to_s.match(/\.tar\.gz$/) or url.to_s.match(/\.tgz$/)
+              compress_extension='.tar.gz'
+            elsif url.to_s.match(/\.fa.gz$/)
+              compress_extension='.fa.gz'
             end
+
+            ###write 
+            puts "==> Writing file...\n"
+            puts "=>#{g.url}\n"
+            new_dir=jbrowse_data_dir + "/#{g.id}/" #_#{g.tax_id}/"                                 
+            puts "Create dir\n"
+            Dir.mkdir(new_dir)
+            puts "=>create filename\n"
+            filename_new = new_dir + "refseqs"
+            puts "=>write #{filename_new}#{compress_extension}\n"
+            File.open(filename_new + compress_extension, 'w') { |f| 
+              puts('TEST\n')
+#              f.write(Net::HTTP.get(url)) ## this works
+              open(g.url) do |fin|
+                while (buf = fin.read(8192))
+                  f.write buf
+                end
+              end
+            }
+            puts "==========DOWNLOAD FINISHED=====\n"
+                 
+            #            file_size = File.size(filename_new)
             
+            ###comparing public genome files / verifying uniqueness of file
+            #puts "==> Comparing public genome files...\n"
+            #   existing_genomes.reject{|e| e.hidden == true}.each do |e|
+            #     filename_ex=jbrowse_data_dir + "/#{e.id}/_refseqs.fa"  #_#{e.tax_id}/_refseqs.fa"
+            #     puts "--->Comparing with #{filename_ex}\n";
+            #     puts "File.size(filename_ex) == file_size\n"
+            #     puts "--" + `diff #{filename_new} #{filename_ex}`.chomp + "--\n"
+            #     if (File.size(filename_ex)==file_size && 
+            #         `diff #{filename_new} #{filename_ex}`.chomp == '')
+            #       File.delete(filename_new)
+            #       Dir.rmdir(new_dir)
+            #       raise "A public genome already exists on the server. You should use the existing genomes_ID."               
+            #     end
+            #   end
+
             ###executing jbrowse script
             puts "==> Executing prepare-refseqs.pl...\n";
             Dir.chdir(new_dir) do
-              cmd = "#{ jbrowse_bin_dir}/prepare-refseqs.pl --fasta _refseqs.fa  --refs '#{ g.chr_list}'"
-              puts cmd + "\n"
-              output = `#{cmd}`                   
-              raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
+              
+              if (compress_extension == '.fa.gz')
+                system("gunzip refseqs.fa.gz")
+              elsif (compress_extension == '.tar.gz')
+                puts "==>untar...\n"
+                Dir.mkdir "refseqs"
+                system("tar -C refseqs -zxvf refseqs.tar.gz")
+              end
+              
+              ###read _refseqs.fa and create successively temp dir by chromosome                                                                                 
+              if File.exists?("refseqs.fa")  ## single fasta file
+                File.open("refseqs.fa", 'r') do  |f|
+                  process_fasta_file("refseqs.fa")
+                end
+              elsif File.exists?("refseqs") and File.directory?("refseqs")   ## multiple fasta files in a directory
+                Dir.mkdir "data"  ## have to create data dir in this case
+                f=File.open("data/refSeqs_tmp.js", 'w') ### create data/refSeqs_tmp.js
+                f.close()
+                nber_chr=0
+                Find.find("./refseqs"){ |f|
+                  if !f.match(/\/\.{1,}$/) and !File.directory?(f)
+                    puts "copy #{f} -> tmp_refseqs.fa\n"
+                    File.copy f, "tmp_refseqs.fa"
+                    puts "process tmp_refseqs.fa\n"
+                    process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa")
+                    puts "copy JSON\n"
+                    orig=(nber_chr==0) ? nil : "data/refSeqs_tmp.js"
+                    transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
+                    nber_chr+=1
+                  end
+                }
+                move "data/refSeqs_tmp.js", "data/refSeqs.js"                
+              end
             end
+
             puts "Done\n"
             g.update_attributes({:status_id => h_status['success']})
             
@@ -262,7 +312,45 @@ namespace :jbrowse do
       sleep(5)
 
     end 
-    
+
+
   end ### end task
+
+  def process_fasta_file(jbrowse_bin_dir, filename)
+    cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename}"
+    puts cmd + "\n"
+    output = `#{cmd}`
+    raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
+  end
+
+  def transfer_refSeqs(orig, to_transfer, tmp)
+
+    refSeqs_all=[]
+
+    if orig
+      puts "read #{orig}...\n"
+      file = File.new(orig)
+      json = file.readlines.join(' ')
+      json.gsub!(/^\s*refSeqs\s*=\s*/,'')
+      refSeqs_all=JSON.parse(json)
+    end
+
+    puts "read #{to_transfer}...\n"
+    file = File.new(to_transfer)
+    json = file.readlines.join(' ')
+    json.gsub!(/^\s*refSeqs\s*=\s*/,'')
+    refSeqs_cur=JSON.parse(json)
+    puts refSeqs_cur.to_json + "\n"
+    refSeqs_all.push(refSeqs_cur[0])
+    ## delete file
+    File.delete(to_transfer)
+    
+    puts "write #{tmp}...\n"
+    File.open(tmp, 'w') { |f|
+      f.write("refSeqs = \n" + refSeqs_all.to_json)
+    }
+  end
+
+
 
 end  ### end namespace  
