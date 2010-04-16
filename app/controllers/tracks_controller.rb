@@ -54,7 +54,7 @@ require 'digest/sha1'
       rnd_string = random_string(10)
     end
     @track.base_filename = rnd_string 
-#Digest::SHA1.hexdigest(@track.url.to_s + strand_plus).crypt("7hs2ke").sub(/[\\]/, 'a1').sub(/[\/]/, 'a2')
+    #Digest::SHA1.hexdigest(@track.url.to_s + strand_plus).crypt("7hs2ke").sub(/[\\]/, 'a1').sub(/[\/]/, 'a2')
     respond_to do |format|
       if @track.save
         Job.new(

@@ -79,6 +79,10 @@ class GenomesController < ApplicationController
                 :running       => false
                 ).save
         format.html        
+        format.json { 
+          render :layout => false,
+          :json => {:id => @track.id}.to_json
+        }
       rescue Exception => e
         format.html {render :action => :new}
       end
