@@ -129,29 +129,33 @@ namespace :jbrowse do
               end
               
               ###read _refseqs.fa and create successively temp dir by chromosome                                                                                 
-              if File.exists?("refseqs.fa")  ## single fasta file
-                File.open("refseqs.fa", 'r') do  |f|
-                  process_fasta_file("refseqs.fa")
-                end
-              elsif File.exists?("refseqs") and File.directory?("refseqs")   ## multiple fasta files in a directory
-                Dir.mkdir "data"  ## have to create data dir in this case
-                f=File.open("data/refSeqs_tmp.js", 'w') ### create data/refSeqs_tmp.js
-                f.close()
-                nber_chr=0
-                Find.find("./refseqs"){ |f|
-                  if !f.match(/\/\.{1,}$/) and !File.directory?(f)
-                    puts "copy #{f} -> tmp_refseqs.fa\n"
-                    File.copy f, "tmp_refseqs.fa"
-                    puts "process tmp_refseqs.fa\n"
-                    process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa")
-                    puts "copy JSON\n"
-                    orig=(nber_chr==0) ? nil : "data/refSeqs_tmp.js"
-                    transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
-                    nber_chr+=1
+              if File.exists?("refseqs") 
+              
+                if !File.directory?("refseqs")  ## single fasta file
+                  File.open("refseqs", 'r') do  |f|
+                    process_fasta_file(jbrowse_bin_dir, "refseqs")
                   end
-                }
-                move "data/refSeqs_tmp.js", "data/refSeqs.js"                
+                elsif File.directory?("refseqs")   ## multiple fasta files in a directory
+                  Dir.mkdir "data"  ## have to create data dir in this case
+                  f=File.open("data/refSeqs_tmp.js", 'w') ### create data/refSeqs_tmp.js
+                  f.close()
+                  nber_chr=0
+                  Find.find("./refseqs"){ |f|
+                    if !f.match(/\/\.{1,}$/) and !File.directory?(f)
+                      puts "copy #{f} -> tmp_refseqs.fa\n"
+                      File.copy f, "tmp_refseqs.fa"
+                      puts "process tmp_refseqs.fa\n"
+                      process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa")
+                      puts "copy JSON\n"
+                      orig=(nber_chr==0) ? nil : "data/refSeqs_tmp.js"
+                      transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
+                      nber_chr+=1
+                    end
+                  }
+                  move "data/refSeqs_tmp.js", "data/refSeqs.js"                
+                end
               end
+              
             end
 
             puts "Done\n"
