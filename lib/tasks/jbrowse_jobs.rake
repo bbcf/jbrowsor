@@ -5,7 +5,7 @@ namespace :jbrowse do
   task :jobs, [:version] do |t, args|
 
     ### Use rails enviroment                                                                                                                    
-    require "#{  RAILS_ROOT}/config/environment"
+    require "#{RAILS_ROOT}/config/environment"
 
     ### Require Net::HTTP                                                                                                                       
     require 'net/http'
@@ -17,7 +17,8 @@ namespace :jbrowse do
     require 'ftools'
     require 'open-uri'
     require 'find'
-    
+    require 'fileutils'
+
     ###Initialize variables                                                                                                                     
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
@@ -156,8 +157,16 @@ namespace :jbrowse do
                 end
               end
               
+              FileUtils.rm_r "./refseqs"
+              
+              raise "Directory seq has not been created, something went wrong!" if !File.exists?("seq")
+              result_files=Find.find("./seq")
+              raise "No file generated, something went wrong!" if result_files.size < 3
+              
             end
-
+            
+            
+            
             puts "Done\n"
             g.update_attributes({:status_id => h_status['success']})
             
@@ -252,7 +261,9 @@ namespace :jbrowse do
                 ###### Execute biodb-to-json.pl
                 puts "==> Executing biodb-to-json.pl...\n";
                 output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json 1>biodb-to-json.log 2>biodb-to-json.error_log`
-                #file_log = File.new("log", 'r')
+                file_log = File.new("log", 'r')
+                log_txt = file_log.readlines().join("\n")
+                raise "Error executing biodb-to-json.pl: #{log_txt}" if log_txt.match("EXCEPTION")
                 #file_error_log = File.new("error_log", 'r')
                 ##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
                 #raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
