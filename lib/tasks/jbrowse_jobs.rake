@@ -259,7 +259,7 @@ namespace :jbrowse do
                 ###### Execute biodb-to-json.pl
                 puts "==> Executing biodb-to-json.pl...\n";
                 output = `#{jbrowse_bin_dir}/biodb-to-json.pl --conf conf_file.json 1>biodb-to-json.log 2>biodb-to-json.error_log`
-                file_log = File.new("log", 'r')
+                file_log = File.new("biodb-to-json.error_log", 'r')
                 log_txt = file_log.readlines().join("\n")
                 raise "Error executing biodb-to-json.pl: #{log_txt}" if log_txt.match("EXCEPTION")
                 #file_error_log = File.new("error_log", 'r')
