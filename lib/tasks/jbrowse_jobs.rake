@@ -159,14 +159,12 @@ namespace :jbrowse do
               
               FileUtils.rm_r "./refseqs"
               
-              raise "Directory seq has not been created, something went wrong!" if !File.exists?("seq")
-              result_files=Find.find("./seq")
+              raise "Directory seq has not been created, something went wrong!" unless File.exists?("./data/seq")
+              result_files=Dir.new("./data/seq").entries
               raise "No file generated, something went wrong!" if result_files.size < 3
               
             end
-            
-            
-            
+                        
             puts "Done\n"
             g.update_attributes({:status_id => h_status['success']})
             
