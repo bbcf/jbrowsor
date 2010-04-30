@@ -22,7 +22,7 @@ namespace :jbrowse do
     ###Initialize variables                                                                                                                     
     jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
     jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-    puts "APP_CONFIG\[jbrowse_data\] = #{  jbrowse_data_dir}\n"
+    puts "APP_CONFIG\[jbrowse_data\] = #{jbrowse_data_dir}\n"
     if  !File.exist?(jbrowse_data_dir)
       if jbrowse_data_dir != nil && jbrowse_data_dir != ''
         genome_data_dir = jbrowse_data_dir + "/genomes"
