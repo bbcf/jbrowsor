@@ -343,7 +343,9 @@ namespace :jbrowse do
     File.open(file + "_tmp", "w") { |f|
       File.open(file, "r"){ |f2|
         while(l=f2.gets) do
-          if (m= l.match(/^>(\d+_\w+)/))
+          if (m= l.match(/^>([\w_.]+)\s+/))
+            puts l 
+            puts h_chr_list[m[1]]
             f.write(">" + h_chr_list[m[1]] + "\n") if h_chr_list[m[1]]
           else
             f.write(l)
@@ -352,6 +354,7 @@ namespace :jbrowse do
       }
     }
     mv file + "_tmp", file
+    exit
   end
 
   def process_fasta_file(jbrowse_bin_dir, filename, chr_list)
