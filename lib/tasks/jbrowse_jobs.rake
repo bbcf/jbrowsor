@@ -72,7 +72,7 @@ namespace :jbrowse do
             chr_list=JSON.parse(g.chr_list)
             h_chr_list ={ }
             chr_list.each do |chr|
-              chr.each_keys do |k|
+              chr.each_key do |k|
                 h_chr_list[k]=chr[k]
               end
             end
@@ -355,7 +355,7 @@ namespace :jbrowse do
   end
 
   def process_fasta_file(jbrowse_bin_dir, filename, chr_list)
-    tmp_str=chr_list.map{|h| h.each_keys.map{|k| chr_list[k]}.join('')}.join(",")
+    tmp_str=chr_list.map{|h| h.each_key.map{|k| chr_list[k]}.join('')}.join(",")
     cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename} --refs #{tmp_str}"
     puts cmd + "\n"
     output = `#{cmd}`
