@@ -157,7 +157,7 @@ namespace :jbrowse do
                         h_files[m[1]]=f
                       end
                     end
-                  end
+                  }
                   chr_list.each do |h|
                     h.each_key do |k|
                       f= h_files[k]                       
@@ -171,7 +171,7 @@ namespace :jbrowse do
                       transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
                       nber_chr+=1
                     end
-                  }
+                  end
                   move "data/refSeqs_tmp.js", "data/refSeqs.js"                
                 end
               end
