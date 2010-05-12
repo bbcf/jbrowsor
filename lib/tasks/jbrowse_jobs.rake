@@ -149,13 +149,23 @@ namespace :jbrowse do
                   f=File.open("data/refSeqs_tmp.js", 'w') ### create data/refSeqs_tmp.js
                   f.close()
                   nber_chr=0
+                  ### find list of files
+                  h_files={ }
                   Find.find("./refseqs"){ |f|
-                    if !f.match(/\/\.{1,}$/) and !File.directory?(f)
+                    if !f.match(/\/\.{1,}$/) and !File.directory?(f) 
+                      if (m=f.match(/[^\/]+\/(.+)/))
+                        h_files[m[1]]=f
+                      end
+                    end
+                  end
+                  chr_list.each do |h|
+                    h.each_key do |k|
+                      f= h_files[k]                       
                       puts "copy #{f} -> tmp_refseqs.fa\n"
                       File.copy f, "tmp_refseqs.fa"
                       puts "process tmp_refseqs.fa\n"
                       replace_header("tmp_refseqs.fa", h_chr_list)
-                      process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa", chr_list)
+                      process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa", nil)
                       puts "copy JSON\n"
                       orig=(nber_chr==0) ? nil : "data/refSeqs_tmp.js"
                       transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
@@ -354,14 +364,14 @@ namespace :jbrowse do
       }
     }
     mv file + "_tmp", file
-    exit
   end
 
   def process_fasta_file(jbrowse_bin_dir, filename, chr_list)
     puts "process fasta file..."
     tmp_str=chr_list.map{|h| h.keys{|k| chr_list[k]}.join('')}.join(",")
     puts tmp_str;
-    cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename} --refs #{tmp_str}"
+    cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename}"
+    cmd += " --refs #{chr_list}" if chr_list
     puts cmd + "\n"
     output = `#{cmd}`
     raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
