@@ -153,7 +153,7 @@ namespace :jbrowse do
                   h_files={ }
                   Find.find("./refseqs"){ |f|
                     if !f.match(/\/\.{1,}$/) and !File.directory?(f) 
-                      puts l
+                      puts f
                       if (m=f.match(/[^\/]+\/(.+)/))
                         puts m[1]
                         h_files[m[1]]=f
