@@ -342,7 +342,7 @@ namespace :jbrowse do
   def replace_header(file, h_chr_list)
     File.open(file + "_tmp", "w") { |f|
       File.open(file, "r"){ |f2|
-        while(l=f.gets) do
+        while(l=f2.gets) do
           if (m= l.match(/^>(\d+_\w+)/))
             f.write(">" + h_chr_list[m[1]] + "\n") if h_chr_list[m[1]]
           else
