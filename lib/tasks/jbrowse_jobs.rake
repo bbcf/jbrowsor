@@ -69,7 +69,14 @@ namespace :jbrowse do
             
             ###get the genome info
             g=Genome.find(job.runnable_id)
-            
+            chr_list=JSON.parse(g.chr_list)
+            h_chr_list ={ }
+            chr_list.each do |chr|
+              chr.each_key do |k|
+                h_chr_list[k]=chr[k]
+              end
+            end
+
             ###get fasta file
             puts "==> Getting #{g.url}...\n"
             url = URI.parse(g.url)
@@ -134,7 +141,8 @@ namespace :jbrowse do
               
                 if !File.directory?("refseqs")  ## single fasta file
                   File.open("refseqs", 'r') do  |f|
-                    process_fasta_file(jbrowse_bin_dir, "refseqs")
+                    replace_header("refseqs", h_chr_list)
+                    process_fasta_file(jbrowse_bin_dir, "refseqs", chr_list)
                   end
                 elsif File.directory?("refseqs")   ## multiple fasta files in a directory
                   Dir.mkdir "data"  ## have to create data dir in this case
@@ -146,7 +154,8 @@ namespace :jbrowse do
                       puts "copy #{f} -> tmp_refseqs.fa\n"
                       File.copy f, "tmp_refseqs.fa"
                       puts "process tmp_refseqs.fa\n"
-                      process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa")
+                      replace_header("tmp_refseqs.fa", h_chr_list)
+                      process_fasta_file(jbrowse_bin_dir, "tmp_refseqs.fa", chr_list)
                       puts "copy JSON\n"
                       orig=(nber_chr==0) ? nil : "data/refSeqs_tmp.js"
                       transfer_refSeqs(orig, "data/refSeqs.js", "data/refSeqs_tmp.js")
@@ -210,7 +219,8 @@ namespace :jbrowse do
             ###get the track object                                                                   
             t=Track.find(job.runnable_id)
             g=Genome.find(t.genome_id)
-            
+         
+ 
             ###get wig/bed/gff file        
             puts "==> Getting #{t.url}...\n"
             url = URI.parse(t.url)
@@ -329,8 +339,24 @@ namespace :jbrowse do
 
   end ### end task
 
-  def process_fasta_file(jbrowse_bin_dir, filename)
-    cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename}"
+  def replace_header(file, h_chr_list)
+    File.open(file + "_tmp", "w") { |f|
+      File.open(file, "r"){ |f2|
+        while(l=f.gets) do
+          if (m= l.match(/^>(\d+_\w+)/))
+            f.write(">" + h_chr_list[m[1]] + "\n") if h_chr_list[m[1]]
+          else
+            f.write(l)
+          end
+        end
+      }
+    }
+    mv file + "_tmp", file
+  end
+
+  def process_fasta_file(jbrowse_bin_dir, filename, chr_list)
+    tmp_str=chr_list.map{|h| h.each_key.map{|k| chr_list[k]}.join('')}.join(",")
+    cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename} --refs #{tmp_str}"
     puts cmd + "\n"
     output = `#{cmd}`
     raise "Error executing prepare-refseqs.pl: #{output}" unless (output == '')
