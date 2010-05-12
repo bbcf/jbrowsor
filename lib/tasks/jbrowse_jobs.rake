@@ -163,7 +163,7 @@ namespace :jbrowse do
                   chr_list.each do |h|
                     h.each_key do |k|
                       puts k
-                      f= h_files[k]                       
+                      f= h_files[k + ".fa"]                       
                       puts "copy #{f} -> tmp_refseqs.fa\n"
                       File.copy f, "tmp_refseqs.fa"
                       puts "process tmp_refseqs.fa\n"
