@@ -355,7 +355,9 @@ namespace :jbrowse do
   end
 
   def process_fasta_file(jbrowse_bin_dir, filename, chr_list)
-    tmp_str=chr_list.map{|h| h.each_key.map{|k| chr_list[k]}.join('')}.join(",")
+    puts "process fasta file..."
+    tmp_str=chr_list.map{|h| h.keys{|k| chr_list[k]}.join('')}.join(",")
+    puts tmp_str;
     cmd = "#{jbrowse_bin_dir}/prepare-refseqs.pl --fasta #{filename} --refs #{tmp_str}"
     puts cmd + "\n"
     output = `#{cmd}`
