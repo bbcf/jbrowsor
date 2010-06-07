@@ -69,7 +69,7 @@ namespace :jbrowse do
             
             ###get the genome info
             g=Genome.find(job.runnable_id)
-            g.update_attribute(:status_id, 3)
+            g.update_attribute(:status_id, 2)
             chr_list=JSON.parse(g.chr_list)
             h_chr_list ={ }
             chr_list.each do |chr|
