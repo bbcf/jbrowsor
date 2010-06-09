@@ -233,7 +233,7 @@ namespace :jbrowse do
             ###get the track object                                                                   
             t=Track.find(job.runnable_id)
             g=Genome.find(t.genome_id)
-            t.update_status(:status_id, 2)
+            t.update_attribute(:status_id, 2)
          
  
             ###get wig/bed/gff file        
