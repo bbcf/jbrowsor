@@ -290,7 +290,7 @@ namespace :jbrowse do
                 #file_error_log = File.new("error_log", 'r')
                 ##### TO DO report errors... pb with warnings in Store.pm prevent this currently              
                 #raise "Error executing biodb-to-json.pl: #{output}" if (file_log.size==0)
-                rm "#{genome_base_dir}/annot_gff/#{t.base_filename}.gff"
+                #rm "#{genome_base_dir}/annot_gff/#{t.base_filename}.gff"
               elsif h_data_type[t.data_type_id] == 'quantitative'
                 ### Quantitative track
                 
@@ -323,7 +323,7 @@ namespace :jbrowse do
                 puts "#{cmd}\n"
                 output = `#{cmd}`
                 raise "Error executing wig2png: #{output}" unless (output == '')
-                rm wig_file
+                #                rm wig_file
               end
               
             end
@@ -336,6 +336,7 @@ namespace :jbrowse do
             
           rescue Exception => er
             $stderr.puts er.message
+            File.delete(file_path) ### delete also when it did not work
             t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
           end
           
