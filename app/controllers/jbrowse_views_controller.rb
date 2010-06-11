@@ -81,7 +81,7 @@ class JbrowseViewsController < ApplicationController
         }
       end
     rescue Exception => e
-      render :text => e.message #+ '<br/>' + list_of_tracks.to_json
+      render :text => e.message + '<br/>' + list_of_track_ids.to_json
     end
     #    end     
   end
