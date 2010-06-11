@@ -32,8 +32,7 @@ class JbrowseViewsController < ApplicationController
         
         ### use first track in the list to determine the genome for the whole view and check then homogeneity of tracks regarding to genome
         cur_genome_id = list_of_tracks[0].genome_id
-        list_of_tracks.select{|e| e.genome_id == cur_genome_id}.each_index do |i|
-          track = list_of_tracks[i]
+        list_of_tracks.select{|e| e.genome_id == cur_genome_id}.each_with_index do |track, i|
           track_pos = TrackPosition.new(
                                         :jbrowse_view_id => @jbrowse_view.id, 
                                         :track_id => track.id, 
@@ -43,7 +42,8 @@ class JbrowseViewsController < ApplicationController
         end
         
         ### create symlinks
-        genome_data_dir = Pathname.new(RAILS_ROOT) + "public" + "jbrowse" + "data" + cur_genome_id.to_s + "data"
+#        genome_data_dir = Pathname.new(RAILS_ROOT) + "public" + "jbrowse" + "data" + cur_genome_id.to_s + "data"
+        genome_data_dir = Pathname.new(jbrowse_data_dir) + cur_genome_id.to_s + "data"
         ["tracks","tiles", "seq", "refSeqs.js"].each do |rep|
           File.symlink(genome_data_dir + rep, jbrowse_view_data_dir + rep)
         end 
@@ -58,12 +58,13 @@ class JbrowseViewsController < ApplicationController
         File.open("#{tmp_dir}/trackInfo.js", 'w') {|f| f.write("trackInfo = \n" + trackInfo.to_json) }
         
         ### run generate_names.pl
-        Dir.chdir("#{tmp_dir}") do
-          jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-          cmd = "#{jbrowse_bin_dir}/generate-names.pl --dir ./"
-          puts cmd + "\n"
-          output = `#{cmd}`
-        end
+#        Dir.chdir("#{tmp_dir}") do
+#          jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
+#          cmd = "#{jbrowse_bin_dir}/generate-names.pl --dir ./"
+#          puts cmd + "\n"
+#          output = `#{cmd}`
+#        end
+	system "touch #{tmp_dir}/names"
         
         ### mv names and remove temporary dir
         FileUtils.mv tmp_dir + "/names", jbrowse_view_data_dir
@@ -73,14 +74,14 @@ class JbrowseViewsController < ApplicationController
       end
  
       respond_to do |format|  
-        format.html
+        format.html # missing template
         format.xml {render :layout => false}
         format.json {
          render :json => { :id => @jbrowse_view.id}.to_json
         }
       end
     rescue Exception => e
-      render :text => e.message + '<br/>' + list_of_tracks.to_json
+      render :text => e.message #+ '<br/>' + list_of_tracks.to_json
     end
     #    end     
   end

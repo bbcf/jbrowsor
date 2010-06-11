@@ -1,7 +1,7 @@
 module TrackHelper
   def genome_selection(form)
     genomes = Genome.find(:all, :order => "name", :conditions =>[ "hidden = false"]).map{|g| [g.name, g.id]}
-    form.select (:genome_id, genomes)
+    form.select(:genome_id, genomes)
   end
 
   def data_types
