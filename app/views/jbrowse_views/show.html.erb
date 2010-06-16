@@ -27,8 +27,8 @@
     <%= javascript_include_tag "/jbrowse/js/StaticTrack.js" %>
     <%= javascript_include_tag "/jbrowse/js/ImageTrack.js" %>
     <%= javascript_include_tag "/jbrowse/js/GenomeView.js" %>
-    <%= javascript_include_tag "/jbrowse/data/refSeqs.js" %> <!-- This line needs to be fixed/set once we have genome management sorted out -->
-    <%= javascript_include_tag url_for(:controller => "jbrowse_view", :id => @id, :action => "show") %>
+    <!--<%= javascript_include_tag "/jbrowse/data/refSeqs.js" %> This line needs to be fixed/set once we have genome management sorted out -->
+    <%= javascript_include_tag url_for(:controller => "jbrowse_views", :id => @id, :action => "show") %>
 
     <script type="text/javascript">
     /* <![CDATA[ */
@@ -42,6 +42,8 @@
            }
            var b = new Browser({
                                    containerID: "GenomeBrowser",
+                                   dataRoot: dataRoot,
+                                   browserRoot: browserRoot,
                                    refSeqs: refSeqs,
                                    trackData: trackInfo,
                                    defaultTracks: "DNA,gene,mRNA,noncodingRNA",

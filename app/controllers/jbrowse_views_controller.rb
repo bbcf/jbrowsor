@@ -1,7 +1,6 @@
 class JbrowseViewsController < ApplicationController
 
   ### Json parsing                                  
-  require 'json'
   require 'fileutils'
 
   # POST /jbrowse_views
@@ -92,7 +91,7 @@ class JbrowseViewsController < ApplicationController
     json = source_file.readlines.join(' ')
     json.gsub!(/^\s*trackInfo\s*=\s*/,'')
     trackInfo = []
-    trackInfo.push(JSON.parse(json)[0])
+    trackInfo.push(ActiveSupport::JSON.decode(json)[0])
 
     ### get track_positions    
     view.track_positions.each do |tp|
@@ -146,7 +145,7 @@ class JbrowseViewsController < ApplicationController
     file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
     json = file.readlines.join(' ')
     json.gsub!(/^\s*refSeqs\s*=\s*/,'')
-    all_data['refSeqs']=JSON.parse(json)
+    all_data['refSeqs']=ActiveSupport::JSON.decode(json)
     
     respond_to do |format|
       format.html # show.html.erb
