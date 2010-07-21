@@ -41,7 +41,7 @@ class JbrowseViewsController < ApplicationController
         end
         
         ### create symlinks
-#        genome_data_dir = Pathname.new(RAILS_ROOT) + "public" + "jbrowse" + "data" + cur_genome_id.to_s + "data"
+        #        genome_data_dir = Pathname.new(RAILS_ROOT) + "public" + "jbrowse" + "data" + cur_genome_id.to_s + "data"
         genome_data_dir = Pathname.new(jbrowse_data_dir) + cur_genome_id.to_s + "data"
         ["tracks","tiles", "seq", "refSeqs.js"].each do |rep|
           File.symlink(genome_data_dir + rep, jbrowse_view_data_dir + rep)
@@ -57,12 +57,12 @@ class JbrowseViewsController < ApplicationController
         File.open("#{tmp_dir}/trackInfo.js", 'w') {|f| f.write("trackInfo = \n" + trackInfo.to_json) }
         
         ### run generate_names.pl
-#        Dir.chdir("#{tmp_dir}") do
-#          jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
-#          cmd = "#{jbrowse_bin_dir}/generate-names.pl --dir ./"
-#          puts cmd + "\n"
-#          output = `#{cmd}`
-#        end
+        #        Dir.chdir("#{tmp_dir}") do
+        #          jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse/bin/"
+        #          cmd = "#{jbrowse_bin_dir}/generate-names.pl --dir ./"
+        #          puts cmd + "\n"
+        #          output = `#{cmd}`
+        #        end
 	system "touch #{tmp_dir}/names"
         
         ### mv names and remove temporary dir
@@ -132,8 +132,8 @@ class JbrowseViewsController < ApplicationController
     cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
     
     all_data={ 
-      'var browserRoot'  => "/jbrowse/",
-      'var dataRoot'     => "/jbrowse/views/#{@jbrowse_view.id}/"     #"/jbrowse/data/#{cur_genome_id}/"
+      'var browserRoot'  => APP_CONFIG['browserRoot'] || "/jbrowse/",
+      'var dataRoot'     => (APP_CONFIG['dataRoot'] && (APP_CONFIG['dataRoot'] + "#{@jbrowse_view.id}/")) || "/jbrowse/views/#{@jbrowse_view.id}/"     #"/jbrowse/data/#{cur_genome_id}/"
     }
 
     file = File.new("#{jbrowse_view_dir}/data/trackInfo.js")
