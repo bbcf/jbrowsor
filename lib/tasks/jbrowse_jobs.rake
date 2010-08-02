@@ -330,6 +330,14 @@ namespace :jbrowse do
             ### if arrives here, means that everything worked fine
             t.update_attributes({:status_id => h_status['success']})
             
+            ### callback
+            if APP_CONFIG['template_callback_track']
+              tmp_url = APP_CONFIG['template_callback_track']
+              tmp_url.gsub!(/\{id\}/, t.id)
+              tmp_url.gsub!(/\{status\}/, 1)
+              Net::HTTP.get(tmp_url)
+            end
+            
             ### so let's delete the downloaded file -- if works fine move this line after the rescue
             File.delete(file_path)
             
@@ -337,6 +345,14 @@ namespace :jbrowse do
             $stderr.puts er.message
             File.delete(file_path) ### delete also when it did not work
             t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
+                        ### callback                                                                                                                                              
+            if APP_CONFIG['template_callback_track']
+              tmp_url = APP_CONFIG['template_callback_track']
+              tmp_url.gsub!(/\id\}/, t.id)
+              tmp_url.gsub!(/\{status\}/, 0)
+              Net::HTTP.get(tmp_url)
+            end
+
           end
           
           ### delete file and delete job
