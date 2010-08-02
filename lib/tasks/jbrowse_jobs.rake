@@ -334,7 +334,7 @@ namespace :jbrowse do
             if APP_CONFIG['template_callback_track']
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\{id\}/, t.id)
-              tmp_url.gsub!(/\{status\}/, 1)
+              tmp_url.gsub!(/\{status\}/, '1')
               Net::HTTP.get(tmp_url)
             end
             
@@ -349,7 +349,7 @@ namespace :jbrowse do
             if APP_CONFIG['template_callback_track']
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\id\}/, t.id)
-              tmp_url.gsub!(/\{status\}/, 0)
+              tmp_url.gsub!(/\{status\}/, '0')
               Net::HTTP.get(tmp_url)
             end
 
