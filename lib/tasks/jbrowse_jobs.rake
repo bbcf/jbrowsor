@@ -335,7 +335,8 @@ namespace :jbrowse do
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\{id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/, '1')
-              Net::HTTP.get(tmp_url)
+              url = URI.parse(tmp_url)              
+              Net::HTTP.get(url)
             end
             
             ### so let's delete the downloaded file -- if works fine move this line after the rescue
@@ -350,7 +351,8 @@ namespace :jbrowse do
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/, '0')
-              Net::HTTP.get(tmp_url)
+              url = URI.parse(tmp_url)
+              Net::HTTP.get(url)
             end
 
           end
