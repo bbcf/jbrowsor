@@ -222,7 +222,7 @@ namespace :jbrowse do
       
         ### foreach new track                                                                                                                                
         jobs.each do |job|
-          
+          puts job.to
           begin
             
             ###change running status of the job           
@@ -332,12 +332,12 @@ namespace :jbrowse do
             
             ### callback
             if APP_CONFIG['template_callback_track']
-              tmp_url = APP_CONFIG['template_callback_track']
+              tmp_url = APP_CONFIG['template_callback_track'].dup
               tmp_url.gsub!(/\{id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/,  h_status['success'].to_s)
               url = URI.parse(tmp_url)              
               a= Net::HTTP.get(url)
-              puts a.yaml
+#              puts a.yaml
               puts tmp_url
             end
             
@@ -350,12 +350,12 @@ namespace :jbrowse do
             t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
             ### callback                                                                                                                                              
             if APP_CONFIG['template_callback_track']
-              tmp_url = APP_CONFIG['template_callback_track']
-              tmp_url.gsub!(/\id\}/, t.id.to_s)
+              tmp_url = APP_CONFIG['template_callback_track'].dup
+              tmp_url.gsub!(/\{id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/,  h_status['failure'].to_s)
               url = URI.parse(tmp_url)
               a = Net::HTTP.get(url)
-              puts a.yaml
+#              puts a.yaml
               puts tmp_url
             end
 
