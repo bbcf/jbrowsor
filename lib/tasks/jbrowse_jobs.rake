@@ -222,7 +222,6 @@ namespace :jbrowse do
       
         ### foreach new track                                                                                                                                
         jobs.each do |job|
-          puts job.to
           begin
             
             ###change running status of the job           
