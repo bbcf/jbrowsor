@@ -334,7 +334,7 @@ namespace :jbrowse do
             if APP_CONFIG['template_callback_track']
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\{id\}/, t.id.to_s)
-              tmp_url.gsub!(/\{status\}/, '1')
+              tmp_url.gsub!(/\{status\}/,  h_status['success'].to_s)
               url = URI.parse(tmp_url)              
               a= Net::HTTP.get(url)
               puts a.yaml
@@ -352,7 +352,7 @@ namespace :jbrowse do
             if APP_CONFIG['template_callback_track']
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\id\}/, t.id.to_s)
-              tmp_url.gsub!(/\{status\}/, '0')
+              tmp_url.gsub!(/\{status\}/,  h_status['failure'].to_s)
               url = URI.parse(tmp_url)
               a = Net::HTTP.get(url)
               puts a.yaml
