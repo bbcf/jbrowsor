@@ -336,7 +336,9 @@ namespace :jbrowse do
               tmp_url.gsub!(/\{id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/, '1')
               url = URI.parse(tmp_url)              
-              Net::HTTP.get(url)
+              a= Net::HTTP.get(url)
+              puts a.yaml
+              puts tmp_url
             end
             
             ### so let's delete the downloaded file -- if works fine move this line after the rescue
@@ -346,13 +348,15 @@ namespace :jbrowse do
             $stderr.puts er.message
             File.delete(file_path) ### delete also when it did not work
             t.update_attributes({:status_id => h_status['failure'], :error_log => er.message})
-                        ### callback                                                                                                                                              
+            ### callback                                                                                                                                              
             if APP_CONFIG['template_callback_track']
               tmp_url = APP_CONFIG['template_callback_track']
               tmp_url.gsub!(/\id\}/, t.id.to_s)
               tmp_url.gsub!(/\{status\}/, '0')
               url = URI.parse(tmp_url)
-              Net::HTTP.get(url)
+              a = Net::HTTP.get(url)
+              puts a.yaml
+              puts tmp_url
             end
 
           end
