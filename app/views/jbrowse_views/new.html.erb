@@ -1,0 +1,11 @@
+<% form_for(@jbrowse_view) do |f| %>
+<%= f.error_messages %>
+<table>
+<tr><td>Front-end session ID</td><td><%= f.text_field :frontend_session_id %></td></tr>
+<tr><td>List of track IDs (comma separated)</td><td><%= f.text_field :track_list %></td></tr>
+<tr><td>Permanent public</td><td><%= f.check_box :permanent_public %></td></tr>
+</table>
+<%= f.submit "Create new view" %>
+<% end %>
+
+
