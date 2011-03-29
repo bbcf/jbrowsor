@@ -12,3 +12,8 @@ bed:
   id: 3
   name: bed
   description: Genomic regions
+
+sql:
+  id: 4
+  name: sql
+  description: GDV-style sqlite database
