@@ -90,16 +90,16 @@ namespace :jbrowse do
             $stderr.puts "Error building binaries - compute_sqlite_scores" unless system 'ant jar'
           end
           FileUtils.mkdir_p(codepath + "conversion" + "compute_to_sqlite" + "conf")
-          FileUtils.mv(tmpdir + "gdv" + "conversion" + "compute_sqlite_scores" + "compute_to_sqlite.jar",  codepath + "conversion" + "compute_to_sqlite")
-          FileUtils.mv(tmpdir + "gdv" + "conversion" + "compute_sqlite_scores" + "lib",  codepath + "conversion" + "compute_to_sqlite" + "lib")
+          FileUtils.cp(tmpdir + "gdv" + "conversion" + "compute_sqlite_scores" + "compute_to_sqlite.jar",  codepath + "conversion" + "compute_to_sqlite")
+          FileUtils.cp_r(tmpdir + "gdv" + "conversion" + "compute_sqlite_scores" + "lib",  codepath + "conversion" + "compute_to_sqlite" + "lib")
           File.open(codepath + "conversion" + "compute_to_sqlite" + "conf" + "conf.yaml", 'w'){|out| out.puts(compute_conf_hash.to_yaml)}
 
           cd "gdv/conversion/transform_to_sqlite" do
             $stderr.puts "Error building binaries - transform_to_sqlite" unless system 'ant jar'
           end
           FileUtils.mkdir_p(codepath + "conversion" + "transform_to_sqlite" + "conf")
-          FileUtils.mv(tmpdir + "gdv" + "conversion" + "transform_to_sqlite" + "transform_to_sqlite.jar",  codepath + "conversion" + "transform_to_sqlite")
-          FileUtils.mv(tmpdir + "gdv" + "conversion" + "transform_to_sqlite" + "lib",  codepath + "conversion" + "transform_to_sqlite" + "lib")
+          FileUtils.cp(tmpdir + "gdv" + "conversion" + "transform_to_sqlite" + "transform_to_sqlite.jar",  codepath + "conversion" + "transform_to_sqlite")
+          FileUtils.cp_r(tmpdir + "gdv" + "conversion" + "transform_to_sqlite" + "lib",  codepath + "conversion" + "transform_to_sqlite" + "lib")
           File.open(codepath + "conversion" + "transform_to_sqlite" + "conf" + "conf.yaml", 'w'){|out| out.puts(transform_conf_hash.to_yaml)}
         end
         FileUtils.remove_dir(tmpdir + "gdv", true)
