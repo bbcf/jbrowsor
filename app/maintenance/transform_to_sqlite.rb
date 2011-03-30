@@ -16,6 +16,6 @@ require(env_file)
 
 Daemons.run_proc("transform_to_sqlite") do
   FileUtils::cd(Pathname.new(RAILS_ROOT) + "jbrowse" + "conversion" + "transform_to_sqlite") do
-    system("java -jar transform_to_sqlite.jar")
+    exec("java -jar transform_to_sqlite.jar")
   end
 end

@@ -203,7 +203,7 @@ Daemons.run_proc('job_runner.rb') do
               raise "Qualitative data tracks from sql not yet implemented"
               #TODO fix/remove once we have qualitative sql conversion sorted out
             end 
-            db = SQLite::Database.new(compute_to_sqlite_jobs_db.to_s)
+            db = SQLite3::Database.new(compute_to_sqlite_jobs_db.to_s)
             db.execute("INSERT INTO jobs(trackId,indb,inpath,outdb,outpath,rapidity,mail) VALUES (:trackId,:indb,:inpath,:outdb,:outpath,:rapidity,:mail)", 
                        :trackId => t.id,
                        :indb => "",
