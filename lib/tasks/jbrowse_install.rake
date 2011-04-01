@@ -26,7 +26,7 @@ namespace :jbrowse do
 
     compute_conf_hash = {
       "tmp_directory" => tmpdir.to_s,
-      "feedback_url"=>URI.parse(app.url_for(:controller => :tracks, :action => :gdv_conversion_done)).path
+      "feedback_url"=>app.url_for(:controller => :tracks, :action => :gdv_conversion_done)
     }
 
     transform_conf_hash = {
@@ -64,7 +64,7 @@ namespace :jbrowse do
         File.open(codepath + "js" + "gdv_canvas.js", 'w') do |outfile|
           File.open(codepath + "js" + "gdv_canvas.js_bak") do |infile|
            infile.each_line do |line|
-              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = #{URI.parse(app.url_for(:controller => :tracks, :action => :gdv_query)).path}") 
+              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = #{app.url_for(:controller => :tracks, :action => :gdv_query)}") 
               outfile.puts line
             end
           end

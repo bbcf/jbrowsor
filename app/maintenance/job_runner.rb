@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-1 -*-
 require 'daemons'
 require 'pathname'
+require 'fileutils'
 require 'sqlite3'
 
 ### Generate absolute path of environment.rb
@@ -65,7 +66,10 @@ Daemons.run_proc('job_runner.rb') do
     ## Select next job and set it to running
     Job.transaction do
       job = Job.first(:conditions =>["running is false"], :order => "updated_at")
-      job.update_attribute(:running,  true) if job
+      if job
+        job.update_attribute(:running,  true)
+        job.runnable.update_attribute(:status_id, h_status['running'])
+      end
     end
 
     unless job.nil?
@@ -176,21 +180,22 @@ Daemons.run_proc('job_runner.rb') do
 	#################### TRACKS
 	$stderr.puts "Job is a track job"
 	begin
-	  puts "==>Processing job #{job.id}..." 
+	  $stderr.puts "==>Processing job #{job.id}..." 
 
 	  ###get the genome info
 	  t=job.runnable
 	  g=t.genome
 	  genome_base_dir = jbrowse_data_dir + "#{g.id}"
-	  feature_file = genome_base_dir + "#{t.base_filename}.#{t.file_type.name}"
+	  feature_file = "#{t.base_filename}.#{t.file_type.name}"
+          track_data_path = jbrowse_data_dir + t.genome_id.to_s + "data" + "tracks"
 	  config_file = genome_base_dir + "#{t.base_filename}_conf.json"
 
 	  ###get wig/bed/gff/sql file
-          puts "==> Getting track information #{t.url}...\n"
+          $stderr.puts "==> Getting track information #{t.url}...\n"
           url = URI.parse(t.url)
 	  Net::HTTP.start(url.host) do |http|
 	    http.request_get(url.path) do |response|
-	      File.open(feature_file, 'w') do |f|
+	      File.open(genome_base_dir + feature_file, 'w') do |f|
 		response.read_body do |segment|
 		  f.write(segment)
 		end # |segment|
@@ -198,21 +203,29 @@ Daemons.run_proc('job_runner.rb') do
 	    end # |response|
 	  end # |http|
 
-          if t.data_type.name == "sql"
+          $stderr.puts "File type: " + t.file_type.name
+          if t.file_type.name == "sql"
             if t.data_type.name == "qualitative"
               raise "Qualitative data tracks from sql not yet implemented"
               #TODO fix/remove once we have qualitative sql conversion sorted out
             end 
-            db = SQLite3::Database.new(compute_to_sqlite_jobs_db.to_s)
-            db.execute("INSERT INTO jobs(trackId,indb,inpath,outdb,outpath,rapidity,mail) VALUES (:trackId,:indb,:inpath,:outdb,:outpath,:rapidity,:mail)", 
-                       :trackId => t.id,
-                       :indb => "",
-                       :inpath => "",
-                       :outdb => "",
-                       :outpath => "",
-                       :rapidity => 1,
-                       :mail => ""
-                       )
+
+            FileUtils.mkdir_p(track_data_path.to_s)
+            SQLite3::Database.open(compute_to_sqlite_jobs_db.to_s) do |db|
+              $stderr.puts db.database_list
+              $stderr.puts "I"
+              db.execute("INSERT INTO jobs(trackId,indb,inpath,outdb,outpath,rapidity,mail) VALUES (:trackId,:indb,:inpath,:outdb,:outpath,:rapidity,:mail)", 
+                         :trackId => t.id,
+                         :indb => "#{t.base_filename}.#{t.file_type.name}",
+                         :inpath => genome_base_dir.to_s,
+                         :outdb => t.base_filename,
+                         :outpath => track_data_path.to_s,
+                         :rapidity => 1,
+                         :mail => ""
+                         )
+            end
+            $stderr.puts "II"
+            Job.find(job.id).destroy
 
           else
 
@@ -259,6 +272,7 @@ Daemons.run_proc('job_runner.rb') do
 	$stderr.puts "ERROR: Invalud job type"
       end
     end
+    $stderr.puts "going to sleep"
     sleep(sleep_duration)
   end
 end
