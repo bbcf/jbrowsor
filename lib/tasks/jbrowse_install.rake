@@ -7,6 +7,10 @@ namespace :jbrowse do
   desc "Installs jbrowse code into JbrowseoR"
   task :install, [:version] do |t, args|
 
+    ### Command line arguments
+    host     = ENV['host'] || "localhost"
+    protocol = ENV['protocol'] || "http"
+
     ### Use rails enviroment                                                                                                          
     require "#{RAILS_ROOT}/config/environment"
 
@@ -26,14 +30,14 @@ namespace :jbrowse do
 
     compute_conf_hash = {
       "tmp_directory" => tmpdir.to_s,
-      "feedback_url"=>app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :host => "localhost")
+      "feedback_url"=>app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :host => host, :protocol => protocol, :only_path => false)
     }
 
     transform_conf_hash = {
       "sqlite_output_directory" => "",
       "jbrowse_output_directory" => "",
       "compute_sqlite_scores_database" => "",
-      "feedback_url" => "",
+      "feedback_url" => app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :host => host, :protocol => protocol, :only_path => false),
       "database_link" => "",
       "jbrowse_ressource_url" => ""
     }
@@ -64,7 +68,7 @@ namespace :jbrowse do
         File.open(codepath + "js" + "gdv_canvas.js", 'w') do |outfile|
           File.open(codepath + "js" + "gdv_canvas.js_bak") do |infile|
            infile.each_line do |line|
-              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = #{app.url_for(:controller => :tracks, :action => :gdv_query, :only_path => true)}") 
+              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = #{app.url_for(:controller => :tracks, :action => :gdv_query, :only_path => false, :host => host, :protocol => protocol)}") 
               outfile.puts line
             end
           end

@@ -43,7 +43,11 @@ after "deploy:update_code", :install_jbrowse, :configure_database, :configure_gl
 
 desc "Installs the jbrowse software in the correct place on the server"
 task :install_jbrowse, :roles => :app do
-  run("cd #{release_path}; /usr/bin/rake jbrowse:install RAILS_ENV=production")
+  command = "cd #{release_path}; /usr/bin/rake --trace jbrowse:install"
+  command += " host=#{configuration[:host]}" if configuration[:host]
+  command += " protocol=#{configuration[:protocol]}" if configuration[:protocol]
+  $stderr.puts command
+  run(command)
 end
 
 desc "Uninstalls the jbrowse software in the correct place on the server"
