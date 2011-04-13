@@ -7,12 +7,15 @@ namespace :jbrowse do
   desc "Installs jbrowse code into JbrowseoR"
   task :install, [:version] do |t, args|
 
-    ### Command line arguments
-    host     = ENV['host'] || "localhost"
-    protocol = ENV['protocol'] || "http"
-
     ### Use rails enviroment                                                                                                          
     require "#{RAILS_ROOT}/config/environment"
+
+    ### prepare urls
+    host =  APP_CONFIG["url_host"] || "localhost"
+    host += ":#{APP_CONFIG["url_port"]}" if APP_CONFIG["url_port"]
+    host += APP_CONFIG["url_prefix"].sub(/^\/?(.*)\/?$/, '/\1') if APP_CONFIG["url_prefix"] and not  APP_CONFIG["url_prefix"].empty?
+    app.host!(host)
+    app.https!(APP_CONFIG["url_https"])
 
     jbrowse_git_branch = "gdv" #switch back to  "master" eventually ?
     jbrowse_git_repo = "git://github.com/bbcf/jbrowse"
@@ -30,14 +33,14 @@ namespace :jbrowse do
 
     compute_conf_hash = {
       "tmp_directory" => tmpdir.to_s,
-      "feedback_url"=>app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :host => host, :protocol => protocol, :only_path => false)
+      "feedback_url"=>app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :only_path => false)
     }
 
     transform_conf_hash = {
       "sqlite_output_directory" => "",
       "jbrowse_output_directory" => "",
       "compute_sqlite_scores_database" => "",
-      "feedback_url" => app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :host => host, :protocol => protocol, :only_path => false),
+      "feedback_url" => app.url_for(:controller => :tracks, :action => :gdv_conversion_done, :only_path => false),
       "database_link" => "",
       "jbrowse_ressource_url" => ""
     }
@@ -59,16 +62,16 @@ namespace :jbrowse do
 	File.symlink(codepath + "css", linkpath + "css")
 	File.symlink(codepath + "js", linkpath + "js")
 	File.symlink(codepath + "jslib", linkpath + "jslib")
-       File.symlink(codepath + "img", linkpath + "img")
-       File.symlink(jbrowse_data_dir, linkpath + "data")
-       File.symlink(jbrowse_views_dir, linkpath + "views")
+        File.symlink(codepath + "img", linkpath + "img")
+        File.symlink(jbrowse_data_dir, linkpath + "data")
+        File.symlink(jbrowse_views_dir, linkpath + "views")
 
         # modify query url in js file
-        File.rename(codepath + "js" + "gdv_canvas.js", (codepath + "js" + "gdv_canvas.js_bak"))
-        File.open(codepath + "js" + "gdv_canvas.js", 'w') do |outfile|
-          File.open(codepath + "js" + "gdv_canvas.js_bak") do |infile|
+        File.rename(codepath + "js" + "gdv.js", (codepath + "js" + "gdv.js_bak"))
+        File.open(codepath + "js" + "gdv.js", 'w') do |outfile|
+          File.open(codepath + "js" + "gdv.js_bak") do |infile|
            infile.each_line do |line|
-              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = #{app.url_for(:controller => :tracks, :action => :gdv_query, :only_path => false, :host => host, :protocol => protocol)}") 
+              line.sub!(/var _POST_URL = \"[^\"]+\"/, "var _POST_URL = \"#{app.url_for(:controller => :tracks, :action => :gdv_query, :only_path => false)}\"") 
               outfile.puts line
             end
           end

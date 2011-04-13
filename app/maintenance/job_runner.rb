@@ -15,6 +15,7 @@ end
 
 Daemons.run_proc('job_runner.rb') do
   sleep_duration = 12
+  $stderr.puts "in Daemons.run_proc"
 
   ### Require environment (using absolute path since daemon runs in root directory)
   require(env_file)
@@ -31,6 +32,8 @@ Daemons.run_proc('job_runner.rb') do
   jbrowse_bin_dir = Pathname.new(RAILS_ROOT) + "jbrowse" + "bin"
   compute_to_sqlite_jobs_db = Pathname.new(RAILS_ROOT) + "jbrowse" + "conversion" + "compute_to_sqlite" + "jobs.db"
   transform_to_sqlite_jobs_db = Pathname.new(RAILS_ROOT) + "jbrowse" + "conversion" + "transform_to_sqlite" + "jobs.db"
+
+  $stderr.puts "compute_to_sqlite_jobs_db: #{compute_to_sqlite_jobs_db.to_s}"
 
   raise "Jbrowse data directory is not properly set in your config.yml" if jbrowse_data_dir.nil? or jbrowse_data_dir.to_s.empty?
   raise "The Jbrowse data directory is set as #{jbrowse_data_dir}, but this file is not a directory" if File.exist?(jbrowse_data_dir) and not File.directory?(jbrowse_data_dir)

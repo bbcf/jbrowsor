@@ -4,9 +4,17 @@ development:
   - 111.111.111.111
   - 222.222.222.222
   jbrowse_data:
-    /data/jbrowse/data
+    /tmp/jbrowse/data
   jbrowse_views:
-    /data/jbrowse/views
+    /tmp/jbrowse/views
+  url_https:
+    false
+  url_host:
+    localhost
+  url_path_prefix:
+    
+  url:port:
+    3000
 
 test:
   trusted_frontend_ip: 
@@ -21,3 +29,11 @@ production:
     /data/jbrowse/data
   jbrowse_views:
     /data/jbrowse/views
+  url_https:
+    true
+  url_host:
+    web.host.com
+  url_path_prefix:
+    rails_apps/jbrowsor
+  url:port:
+    

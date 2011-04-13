@@ -3,6 +3,11 @@ class JbrowseViewsController < ApplicationController
   ### Json parsing                                  
   require 'fileutils'
 
+  # uncomment to activate for debugging
+  #  def new
+  #    @jbrowse_view = JbrowseView.new
+  #  end
+
   # POST /jbrowse_views
   # POST /jbrowse_views.xml
   # preliminary
@@ -84,14 +89,56 @@ class JbrowseViewsController < ApplicationController
     end
     #    end     
   end
-
-  def generate_trackInfo(source_file, view)
   
-    ### retrieve first element of the trackInfo file generated when creating the genome
+  # GET /jbrowse_views/1
+  # GET /jbrowse_views/1.xml
+  def show
+    @jbrowse_view = JbrowseView.find(params[:id])
+    @id = params[:id]
+    
+    jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
+    jbrowse_view_dir=Pathname.new(APP_CONFIG['jbrowse_views']) + @jbrowse_view.id.to_s
+
+    ### take first track to get the genome_id
+    @genome = @jbrowse_view.track_positions[0].track.genome
+    cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
+
+    all_data={
+      'var browserRoot'  => APP_CONFIG['browserRoot'] || "/jbrowse/",
+      'var dataRoot'     => (APP_CONFIG['dataRoot'] && (APP_CONFIG['dataRoot'] + "#{@jbrowse_view.id}/")) || "/jbrowse/views/#{@jbrowse_view.id}/",     #"/jbrowse/data/#{cur_genome_id}/"
+      'var styleRoot'    => APP_CONFIG['browserRoot']
+    }
+
+    file = File.new("#{jbrowse_view_dir}/data/trackInfo.js")
+    json = file.readlines.join(' ')
+    json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
+    source_file =  File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
+    all_data['trackInfo']=generate_trackInfo(source_file, @jbrowse_view, logger)
+
+    file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
+    json = file.readlines.join(' ')
+    json.gsub!(/^\s*refSeqs\s*=\s*/,'')
+    json.gsub!(/("seqDir"\s*:\s*")seq/,'\1data/seq')
+    all_data['refSeqs']=ActiveSupport::JSON.decode(json)
+    
+    respond_to do |format|
+      format.html # show.html.erb
+      format.js { 
+        render :json => 
+        all_data.keys.map{|k| "#{k} = #{all_data[k].to_json};"}. join("\n")
+      }
+    end
+  end
+
+  private
+  def generate_trackInfo(source_file, view, logger)
+  
+    ### retrieve first element of the trackInfo file generated when creating the genome (sequence track)
     json = source_file.readlines.join(' ')
     json.gsub!(/^\s*trackInfo\s*=\s*/,'')
     trackInfo = []
     trackInfo.push(ActiveSupport::JSON.decode(json)[0])
+    trackInfo[0]["url"].sub!('seq/', 'data/seq/')
 
     ### get track_positions    
     view.track_positions.each do |tp|
@@ -100,7 +147,8 @@ class JbrowseViewsController < ApplicationController
         tmp_h={ }
         if (t.data_type.name == "quantitative")
           tmp_h={
-            "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
+#            "url" => 'data/tracks/{refseq}' + "/#{t.base_filename}.json",
+            "url" => "data/tracks/#{t.base_filename}/{refseq}.json",
             "label" => t.base_filename,
             "type" => "ImageTrack",
             "key" => t.name
@@ -118,43 +166,5 @@ class JbrowseViewsController < ApplicationController
     end
     return trackInfo;
   end
-  
-  # GET /jbrowse_views/1
-  # GET /jbrowse_views/1.xml
-  def show
-    @jbrowse_view = JbrowseView.find(params[:id])
-    @id = params[:id]
-    
-    jbrowse_data_dir = APP_CONFIG["jbrowse_data"]
-    jbrowse_view_dir=Pathname.new(APP_CONFIG['jbrowse_views']) + @jbrowse_view.id.to_s
 
-    ### take first track to get the genome_id                                                                       
-    cur_genome_id = @jbrowse_view.track_positions[0].track.genome_id
-    
-    all_data={ 
-      'var browserRoot'  => APP_CONFIG['browserRoot'] || "/jbrowse/",
-      'var dataRoot'     => (APP_CONFIG['dataRoot'] && (APP_CONFIG['dataRoot'] + "#{@jbrowse_view.id}/")) || "/jbrowse/views/#{@jbrowse_view.id}/"     #"/jbrowse/data/#{cur_genome_id}/"
-    }
-
-    file = File.new("#{jbrowse_view_dir}/data/trackInfo.js")
-    json = file.readlines.join(' ')
-    json.gsub!(/^\s*trackInfo\s*=\s*/,'')  
-    source_file =  File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/trackInfo.js")
-    all_data['trackInfo']=generate_trackInfo(source_file, @jbrowse_view)
-
-    file = File.new("#{jbrowse_data_dir}/#{cur_genome_id}/data/refSeqs.js")
-    json = file.readlines.join(' ')
-    json.gsub!(/^\s*refSeqs\s*=\s*/,'')
-    all_data['refSeqs']=ActiveSupport::JSON.decode(json)
-    
-    respond_to do |format|
-      format.html # show.html.erb
-      format.js { 
-        render :json => 
-        all_data.keys.map{|k| 
-          "#{k} = #{all_data[k].to_json};"}. join("\n")
-      }# show.js.rjs
-    end
-  end
-  
 end

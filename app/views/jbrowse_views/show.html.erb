@@ -1,33 +1,44 @@
-<!DOCTYPE html 
+<!DOCTYPE html
 	  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   
   <head>
+    <!-- V 1.0 -->
     <title>JBrowse</title>
+    <%= stylesheet_link_tag "/jbrowse/css/gdv_style.css" %>
     <%= stylesheet_link_tag "/jbrowse/jslib/dijit/themes/tundra/tundra.css" %>
     <%= stylesheet_link_tag "/jbrowse/jslib/dojo/resources/dojo.css" %>
-    <%= stylesheet_link_tag "/jbrowse/genome.css" %>
+    <%= stylesheet_link_tag "/jbrowse/css/genome.css" %>
 
-    <style type="text/css">
-      html, body { height: 100%; width: 100%; padding: 0; border: 0; }
-    </style>
+    <%= javascript_include_tag "/jbrowse//js/gdv.js" %>
+    <%= javascript_include_tag "/jbrowse/js/Canvas.js" %>
+    <%= javascript_include_tag "/jbrowse/js/Browser.js" %>
+    <%= javascript_include_tag "/jbrowse/js/Track.js" %>
+    <%= javascript_include_tag "/jbrowse/js/LinkPanel.js" %>
+    <%= javascript_include_tag "/jbrowse/js/GeneNames.js" %>
+    <%= javascript_include_tag "/jbrowse/js/FeatureTrack.js" %>
+    <%= javascript_include_tag "/jbrowse/js/SequenceTrack.js" %>
+    <%= javascript_include_tag "/jbrowse/js/touchjBrowse.js" %>
 
-    <%= javascript_include_tag "/jbrowse/jslib/dojo/dojo.js", :djConfig => "isDebug: false" %>
+    <%= javascript_include_tag "/jbrowse/js/ImageTrack.js" %>
+    <%= javascript_include_tag "/jbrowse/js/Layout.js" %>
+    <%= javascript_include_tag "/jbrowse/js/LazyArray.js" %>
+    <%= javascript_include_tag "/jbrowse/js/LazyPatricia.js" %>
+    <%= javascript_include_tag "/jbrowse/js/NCList.js" %>
+    <%= javascript_include_tag "/jbrowse/js/UITracks.js" %>
+    <%= javascript_include_tag "/jbrowse/js/Util.js" %>
+    <%= javascript_include_tag "/jbrowse/js/GenomeView.js" %>
+
+
+    <%= javascript_include_tag "/jbrowse/js/TrackSelection.js" %>
+    <%= javascript_include_tag "/jbrowse/js/ZoneSelection.js" %>
+    <%= javascript_include_tag "/jbrowse/js/GFeatMiner.js" %>
+    <%= javascript_include_tag "/jbrowse/jslib/dojo/dojo.js" %>
     <%= javascript_include_tag "/jbrowse/jslib/dojo/jbrowse_dojo.js" %>
 
-    <%= javascript_include_tag "/jbrowse/js/Browser.js" %>
-    <%= javascript_include_tag "/jbrowse/js/Util.js" %>
-    <%= javascript_include_tag "/jbrowse/js/NCList.js" %>
-    <%= javascript_include_tag "/jbrowse/js/LazyPatricia.js" %>
-    <%= javascript_include_tag "/jbrowse/js/Track.js" %>
-    <%= javascript_include_tag "/jbrowse/js/SequenceTrack.js" %>
-    <%= javascript_include_tag "/jbrowse/js/FeatureTrack.js" %>
-    <%= javascript_include_tag "/jbrowse/js/StaticTrack.js" %>
-    <%= javascript_include_tag "/jbrowse/js/ImageTrack.js" %>
-    <%= javascript_include_tag "/jbrowse/js/GenomeView.js" %>
-    <!--<%= javascript_include_tag "/jbrowse/data/refSeqs.js" %> This line needs to be fixed/set once we have genome management sorted out -->
+
     <%= javascript_include_tag url_for(:controller => "jbrowse_views", :id => @id, :action => "show") %>
 
     <script type="text/javascript">
@@ -44,6 +55,7 @@
                                    containerID: "GenomeBrowser",
                                    dataRoot: dataRoot,
                                    browserRoot: browserRoot,
+                                   styleRoot: styleRoot,
                                    refSeqs: refSeqs,
                                    trackData: trackInfo,
                                    defaultTracks: "DNA,gene,mRNA,noncodingRNA",

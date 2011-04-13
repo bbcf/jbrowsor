@@ -78,6 +78,52 @@ require 'digest/sha1'
     end
   end
 
+  # POST /tracks/gdv_query
+  def gdv_query
+    require "sqlite3"
+    if params[:id]
+      case params[:id]
+      when "db_scores"
+        db_param = String.new params[:db]
+        genome_id = Track.find_by_base_filename(db_param.sub(/\/.*/,"")).genome.id
+        render_string = String.new db_param
+        params[:imgs].split(",").map{|e| e.to_i}.each do |img_num|
+          dbfile = (Pathname.new(APP_CONFIG['jbrowse_data']) + genome_id.to_s + 'data' + 'tracks' + db_param).to_s
+          render_string << "$#{img_num}={"
+          SQLite3::Database.open(dbfile) do |db|
+            render_string << db.execute("select pos,score from sc where number=? order by pos asc", img_num).map{|score_entry| score_entry.join(':') }.join(',')
+          end # SQLite3::Database
+          render_string << "}"
+        end # img_num
+        render :text => render_string
+      else
+        raise "gdv_query: Unknown message id"
+      end #case params[:id]
+    end
+  end
+
+  # POST /tracks/gdv_conversion_done
+  def gdv_conversion_done
+    if params[:id]
+      case params[:id]
+      when "track_status" # deal with feedback from compute_to_sqlite daemon
+	if params[:mess]=="completed"
+	  t = Track.find_by_id(params[:track_id])
+	  t.update_attribute(:status, Status.find_by_name("success")) if t
+	end
+      when "track_error" # deal with error from transform_to_sqlite daemon 
+	t = Track.find_by_id(params[:track_id])
+	t.update_attribute(:status, Status.find_by_name("failure")) if t 
+	#TODO get error message
+      when "track_parsing_success" # deal with success from transform_to_sqlite daemon
+	t = Track.find_by_id(params[:track_id])
+	t.update_attribute(:status, Status.find_by_name("success")) if t 
+      end # case params[:id]
+    end if params[:id]
+    render :nothing => true
+  end
+
+  private
   def random_string(nber_char)
     s=''
     (1..nber_char).to_a.each do |e|

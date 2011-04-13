@@ -1,4 +1,4 @@
-set :application, "set your application name here"
+set :application, "jbrowsor"
 set :user, "set username for servers"
 
 set :repository,  "git://github.com/bbcf/jbrowsor.git"
@@ -44,8 +44,12 @@ after "deploy:update_code", :install_jbrowse, :configure_database, :configure_gl
 desc "Installs the jbrowse software in the correct place on the server"
 task :install_jbrowse, :roles => :app do
   command = "cd #{release_path}; /usr/bin/rake --trace jbrowse:install"
-  command += " host=#{configuration[:host]}" if configuration[:host]
-  command += " protocol=#{configuration[:protocol]}" if configuration[:protocol]
+  if ENV.has_key?(:host)
+    command += " host=#{ENV[:host]}" 
+    command += " protocol=#{ENV[:protocol]}" if ENV.has_key?[:protocol]
+  else
+    $stderr.puts "No hostname set!!!"
+  end
   $stderr.puts command
   run(command)
 end
@@ -69,111 +73,137 @@ namespace :daemons do
   require "fileutils"
   require "pathname"
 
-  desc "Start Daemon to run data preparation jobs"
-  task :jobs_start do
+  desc "Start daemon to run data preparation jobs"
+  task :jobs_start, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./job_runner.rb start")
   end
 
-  desc "Restart Daemon to run data preparation jobs"
-  task :jobs_restart do
+  desc "Restart daemon to run data preparation jobs"
+  task :jobs_restart, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./job_runner.rb restart")
   end
 
-  desc "Stop Daemon to run data preparation jobs"
-  task :jobs_stop do
+  desc "Stop daemon to run data preparation jobs"
+  task :jobs_stop, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./job_runner.rb stop")
   end
 
-  desc "Stop Daemon to run data preparation jobs"
-  task :jobs_status do
+  desc "Get status of daemon to run data preparation jobs"
+  task :jobs_status, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./job_runner.rb status")
   end
 
   desc "Run data preparation jobs script without daemonizing"
-  task :jobs_run do
+  task :jobs_run, :roles => :app do
+    run("/usr/bin/whoami 1>&2")
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./job_runner.rb run")
   end
 
+  desc "Kill data preparation jobs daemons bypassing daemon scripts. WARNING: Uses pgrep -f -> may kill other things"
+  task :jobs_kill, :roles => :app, :on_error => :continue do
+    run("pkill -f job_runner.rb")
+  end
+
 ########
 
-  desc "Start Java Daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
-  task :compute_to_sqlite_start do
+  desc "Start java daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
+  task :compute_to_sqlite_start, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./compute_to_sqlite.rb start")
   end
 
-  desc "Restart Java Daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
-  task :compute_to_sqlite_restart do
+  desc "Restart java daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
+  task :compute_to_sqlite_restart, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./compute_to_sqlite.rb restart")
   end
 
-  desc "Stop Java Daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
-  task :compute_to_sqlite_stop do
+  desc "Stop java daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
+  task :compute_to_sqlite_stop, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./compute_to_sqlite.rb stop")
   end
 
-  desc "Stop Java Daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
-  task :compute_to_sqlite_status do
+  desc "Get status of java daemon to generate sqlite databases for various zoom levels from quantitative sqlite data"
+  task :compute_to_sqlite_status, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./compute_to_sqlite.rb status")
   end
 
-  desc "Run Java Daemon to generate sqlite databases for various zoom levels from quantitative sqlite data without daemonizing"
-  task :compute_to_sqlite_run do
+  desc "Run java daemon to generate sqlite databases for various zoom levels from quantitative sqlite data without daemonizing"
+  task :compute_to_sqlite_run, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./compute_to_sqlite.rb run")
+  end
+
+  desc "Kill compute_to_sqlite daemons bypassing daemon scripts. WARNING: Uses pgrep -f -> may kill other things"
+  task :compute_to_sqlite_kill, :roles => :app, :on_error => :continue do
+    run("pkill -f compute_to_sqlite.jar")
   end
 
 ########
 
-  desc "Start Java Daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
-  task :transform_to_sqlite_start do
+  desc "Start java daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
+  task :transform_to_sqlite_start, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./transform_to_sqlite.rb start")
   end
 
-  desc "Restart Java Daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
-  task :transform_to_sqlite_restart do
+  desc "Restart java daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
+  task :transform_to_sqlite_restart, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./transform_to_sqlite.rb restart")
   end
 
-  desc "Stop Java Daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
-  task :transform_to_sqlite_stop do
+  desc "Stop java daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
+  task :transform_to_sqlite_stop, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./transform_to_sqlite.rb stop")
   end
 
-  desc "Stop Java Daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
-  task :transform_to_sqlite_status do
+  desc "Get status of java daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files"
+  task :transform_to_sqlite_status, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./transform_to_sqlite.rb status")
   end
 
-  desc "Run Java Daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files without daemonizing"
-  task :transform_to_sqlite_run do
+  desc "Run java daemon to generate sqlite databases for various zoom levels from *.bed, *.wig or *.gff files without daemonizing"
+  task :transform_to_sqlite_run, :roles => :app do
     run("cd #{Pathname.new(current_release) + "app" + "maintenance"}; ./transform_to_sqlite.rb run")
   end
 
+  desc "Kill transform_to_sqlite daemons bypassing daemon scripts. WARNING: Uses pgrep -f -> may kill other things"
+  task :transform_to_sqlite_kill, :roles => :app, :on_error => :continue do
+    run("pkill -f transform_to_sqlite.jar")
+  end
+
+########
+
   desc "Start all daemons"
-  task :start_all do
+  task :start do
     jobs_start
     compute_to_sqlite_start
     transform_to_sqlite_start
   end
 
   desc "Restart all daemons"
-  task :restart_all do
+  task :restart do
     jobs_restart
     compute_to_sqlite_restart
     transform_to_sqlite_restart
   end
 
   desc "Stop all daemons"
-  task :stop_all do
+  task :stop do
     jobs_stop
     compute_to_sqlite_stop
     transform_to_sqlite_stop
   end
 
   desc "Get status for all daemons"
-  task :status_all do
+  task :status do
     jobs_status
     compute_to_sqlite_status
     transform_to_sqlite_status
   end
 
+  desc "Kill all daemons bypassing daemon scripts. WARNING: Uses pgrep -f -> may kill other things"
+  task :kill do
+    jobs_kill
+    compute_to_sqlite_kill
+    transform_to_sqlite_kill
+  end
+
 end
+

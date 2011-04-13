@@ -1,4 +1,0 @@
-page.assign 'name', { :first => "Alex", :last => "Nesbitt" }
-
-page.assign 'trackInfo', track_info
-
