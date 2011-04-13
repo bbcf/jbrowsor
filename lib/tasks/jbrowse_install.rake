@@ -13,7 +13,7 @@ namespace :jbrowse do
     ### prepare urls
     host =  APP_CONFIG["url_host"] || "localhost"
     host += ":#{APP_CONFIG["url_port"]}" if APP_CONFIG["url_port"]
-    host += APP_CONFIG["url_prefix"].sub(/^\/?(.*)\/?$/, '/\1') if APP_CONFIG["url_prefix"] and not  APP_CONFIG["url_prefix"].empty?
+    host += APP_CONFIG["url_path_prefix"].sub(/^\/?(.*)\/?$/, '/\1') if APP_CONFIG["url_path_prefix"] and not  APP_CONFIG["url_path_prefix"].empty?
     app.host!(host)
     app.https!(APP_CONFIG["url_https"])
 
